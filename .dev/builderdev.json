@@ -1,0 +1,11 @@
+{
+  "version": "0.2.0",
+  "synced": "2026-11-11",
+  "managed": {
+    ".dev/CLAUDE.md#Ao compactar": "sha256:d13b9d2b6db9fe56",
+    ".dev/CLAUDE.md#Como trabalhar": "sha256:3b393ec4073570b0",
+    ".dev/CLAUDE.md#Fluxo de fases": "sha256:85411856bb04285c",
+    ".dev/CLAUDE.md#Memória do projeto": "sha256:60b7a0d5169bbbfe",
+    ".dev/templates/plan.md": "sha256:88b7a1515c879d96"
+  }
+}
