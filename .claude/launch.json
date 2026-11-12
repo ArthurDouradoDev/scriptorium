@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "previa-figuras",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [".claude/skills/ilustracao-caneta/scripts/previa.mjs", "--porta", "4400"],
+      "port": 4400
+    }
+  ]
+}

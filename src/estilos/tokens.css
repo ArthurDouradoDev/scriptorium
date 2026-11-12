@@ -1,0 +1,42 @@
+/* Tokens de cor e de fonte. Fonte única: nenhum outro arquivo escreve cor.
+   A página usa só --bg e --ink. As três cores --caneta-* existem apenas
+   dentro de figuras (ver .dev/memory/paleta-de-figuras.md).
+   Os valores da paleta são provisórios até a validação visual da fase f1. */
+
+:root,
+[data-theme="light"] {
+  --bg: #ffffff;
+  --ink: #0f2167;
+  --caneta-vermelha: #b3261e;
+  --caneta-verde: #1b7a43;
+  --caneta-ambar: #955a00;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000;
+    --ink: #ffffff;
+    --caneta-vermelha: #ff8a7a;
+    --caneta-verde: #62d394;
+    --caneta-ambar: #f5b942;
+  }
+}
+
+[data-theme="dark"] {
+  --bg: #000000;
+  --ink: #ffffff;
+  --caneta-vermelha: #ff8a7a;
+  --caneta-verde: #62d394;
+  --caneta-ambar: #f5b942;
+}
+
+/* Derivadas: repetidas em [data-theme] para valerem também num trecho
+   da página com tema próprio (a prévia mostra os dois temas lado a lado). */
+:root,
+[data-theme] {
+  --muted: color-mix(in srgb, var(--ink) 62%, var(--bg));
+  --rule: color-mix(in srgb, var(--ink) 18%, var(--bg));
+  --wash: color-mix(in srgb, var(--ink) 5%, var(--bg));
+  --serif: "Newsreader Variable", "Newsreader", Georgia, "Times New Roman", serif;
+  --hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+}

@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RSRP e RSRQ · Guia de RF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#0f2167;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --hand:"Caveat","Segoe Print","Bradley Hand",cursive;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --bg:#000000; --ink:#ffffff; } }
+:root[data-theme="dark"]{ --bg:#000000; --ink:#ffffff; }
+:root{
+  --muted:color-mix(in srgb,var(--ink) 62%,var(--bg));
+  --rule:color-mix(in srgb,var(--ink) 18%,var(--bg));
+  --wash:color-mix(in srgb,var(--ink) 5%,var(--bg));
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:19px;line-height:1.65;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--rule);transition:background .3s}
+.bar-in{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}
+.crumb{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--ink);font-weight:600}
+#theme{font:inherit;font-family:var(--hand);font-size:20px;line-height:1;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:999px;padding:5px 14px 7px;cursor:pointer;white-space:nowrap}
+#theme:hover{background:var(--ink);color:var(--bg)}
+#progress{height:2px;background:var(--ink);width:0}
+main{max-width:680px;margin:0 auto;padding:0 16px}
+.wide{position:relative;left:50%;transform:translateX(-50%);width:min(900px,100vw - 32px)}
+header.hero{padding:72px 0 24px}
+.kicker{font-family:var(--hand);font-size:26px;line-height:1}
+h1{font-size:clamp(44px,9vw,76px);line-height:1;letter-spacing:-.02em;font-weight:600;margin:10px 0 18px}
+.lede{font-size:23px;line-height:1.45;color:var(--muted);margin:0}
+h2{font-size:32px;line-height:1.15;font-weight:600;letter-spacing:-.01em;margin:72px 0 12px}
+h2 .n{font-family:var(--hand);font-weight:500;font-size:30px;margin-right:10px;color:var(--muted)}
+p{margin:0 0 18px}
+em.term{font-style:normal;font-weight:600;border-bottom:1.5px solid var(--ink)}
+figure{margin:36px 0}
+figcaption{font-size:16px;line-height:1.45;color:var(--muted);margin-top:10px;max-width:680px}
+figcaption b{color:var(--ink)}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg .s{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+svg .thin{stroke-width:1}
+svg .bold{stroke-width:2.2}
+svg text{font-family:var(--hand);font-size:22px;fill:var(--ink)}
+svg .paper{fill:var(--bg)}
+.draw{stroke-dasharray:1;stroke-dashoffset:1}
+.fade{opacity:0}
+.inked .draw{animation:draw .55s ease forwards;animation-delay:var(--d,0s)}
+.inked .fade{animation:fade .5s ease forwards;animation-delay:var(--d,0s)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+.formula{font-size:26px;display:flex;align-items:center;justify-content:center;gap:14px;margin:30px 0;flex-wrap:wrap}
+.frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1.25}
+.frac span:first-child{border-bottom:1.5px solid var(--ink);padding:0 10px 2px}
+.note{font-family:var(--hand);font-size:23px;line-height:1.25;border-left:2px solid var(--ink);padding:2px 0 2px 16px;margin:26px 0}
+table{width:100%;border-collapse:collapse;font-size:17px;margin:22px 0}
+th,td{text-align:left;padding:9px 10px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:600;border-bottom:1.5px solid var(--ink)}
+td.num{white-space:nowrap;font-variant-numeric:tabular-nums}
+.small{font-size:15.5px;color:var(--muted)}
+/* simulação */
+.sim{border:1.5px solid var(--ink);border-radius:14px;padding:18px 18px 22px;margin:36px 0}
+.sim-title{font-family:var(--hand);font-size:26px;line-height:1.1;margin:0 0 4px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin-top:10px}
+.controls label{display:block;font-size:16px}
+.controls output{float:right;font-variant-numeric:tabular-nums;color:var(--muted)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:24px;background:none;margin:2px 0 0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:2px;background:var(--ink);border-radius:2px}
+input[type=range]::-moz-range-track{height:2px;background:var(--ink);border-radius:2px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--bg);border:2px solid var(--ink);margin-top:-8px}
+input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--bg);border:2px solid var(--ink)}
+input[type=range]:focus-visible{outline:2px solid var(--ink);outline-offset:3px;border-radius:4px}
+.reads{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin:18px 0 6px}
+.read .lab{font-size:15px;color:var(--muted)}
+.read .val{font-size:34px;line-height:1.1;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.read .val small{font-size:16px;font-weight:400;color:var(--muted)}
+.read .cls{font-family:var(--hand);font-size:22px;line-height:1.1;min-height:24px}
+.meter{position:relative;height:2px;background:var(--rule);margin:10px 0 4px}
+.meter i{position:absolute;top:-6px;width:2px;height:14px;background:var(--ink);transition:left .15s}
+.ends{display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.verdict{font-family:var(--hand);font-size:25px;line-height:1.2;margin:14px 0 0;min-height:60px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:14.5px;color:var(--muted);margin-top:4px}
+.legend span{white-space:nowrap}
+.sw{display:inline-block;width:18px;height:12px;border:1.2px solid var(--ink);vertical-align:-1px;margin-right:6px}
+.sw.a{background:repeating-linear-gradient(135deg,var(--ink) 0 1.6px,transparent 1.6px 3px)}
+.sw.b{background:repeating-linear-gradient(135deg,var(--ink) 0 1px,transparent 1px 5px)}
+.sw.c{background:repeating-linear-gradient(135deg,var(--ink) 0 1px,transparent 1px 5px),repeating-linear-gradient(45deg,var(--ink) 0 1px,transparent 1px 5px)}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;margin:26px 0}
+.quad div{padding:16px 18px;font-size:17px;line-height:1.45}
+.quad div:nth-child(odd){border-right:1px solid var(--rule)}
+.quad div:nth-child(-n+2){border-bottom:1px solid var(--rule)}
+.quad h3{font-family:var(--hand);font-size:25px;line-height:1.1;margin:0 0 6px;font-weight:700}
+ul.sum{padding-left:20px;margin:0 0 18px}
+ul.sum li{margin-bottom:8px}
+details{border-bottom:1px solid var(--rule);padding:12px 0}
+summary{cursor:pointer;font-weight:600}
+details p{margin:10px 0 2px;color:var(--muted)}
+footer{max-width:680px;margin:80px auto 0;padding:22px 16px 60px;border-top:1px solid var(--rule);display:flex;justify-content:space-between;gap:16px;font-size:16px;color:var(--muted)}
+footer b{display:block;color:var(--ink);font-size:19px}
+@media (max-width:640px){
+  body{font-size:18px}
+  svg text{font-size:28px}
+  .wide{width:100%}
+  .controls,.reads,.quad{grid-template-columns:1fr}
+  .quad div{border-right:0!important;border-bottom:1px solid var(--rule)}
+  .quad div:last-child{border-bottom:0}
+  header.hero{padding-top:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  .draw{stroke-dashoffset:0}.fade{opacity:1}
+  .inked .draw,.inked .fade{animation:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="boil" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="1" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.6" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="crumb"><b>Guia de RF</b> · Módulo 2 · Medidas de sinal</div>
+    <button id="theme" type="button" aria-label="Alternar tema claro e escuro">tema escuro</button>
+  </div>
+  <div id="progress"></div>
+</div>
+
+<main>
+<header class="hero">
+  <div class="kicker">aula 3</div>
+  <h1>RSRP e RSRQ</h1>
+  <p class="lede">Duas medidas que o celular faz o tempo todo. Uma diz quão forte a célula chega. A outra diz quão limpo esse sinal está no meio de todo o resto.</p>
+</header>
+
+<p>Imagine uma festa cheia. Você tenta ouvir um amigo do outro lado da sala. Duas coisas decidem se a conversa funciona: o volume da voz dele quando chega até você, e quanto barulho há em volta.</p>
+<p>No LTE, o celular faz essas duas perguntas sobre cada célula que enxerga. O <em class="term">RSRP</em> responde à primeira: quão forte chega a voz da célula. O <em class="term">RSRQ</em> responde à segunda: de tudo o que a antena capta, quanto é essa voz. Com os dois números, a rede decide em que célula o celular fica e quando troca de célula.</p>
+
+<h2><span class="n">1</span>O que o celular mede</h2>
+<p>O LTE divide o sinal em uma grade de tempo e frequência. Cada quadradinho da grade é um <em class="term">elemento de recurso</em>: uma subportadora de 15 kHz durante um símbolo. Um bloco de 12 subportadoras é um <em class="term">bloco de recursos</em> (RB).</p>
+<p>A maior parte dos quadradinhos leva dados, e o celular não sabe de antemão o que vem neles. Alguns, em posições fixas, levam o <em class="term">sinal de referência</em>: uma sequência conhecida, enviada sempre com a mesma potência, haja tráfego ou não. É nesses que o celular mede.</p>
+
+<figure class="wide" id="fig-grid">
+  <svg viewBox="0 0 780 400" role="img" aria-label="Grade de um bloco de recursos com 12 subportadoras e 7 símbolos. Quatro elementos estão hachurados: são os sinais de referência.">
+    <g id="grid" filter="url(#boil)"></g>
+    <text x="120" y="388" class="fade" style="--d:1.7s">7 símbolos = 0,5 ms</text>
+    <text transform="translate(60,300) rotate(-90)" class="fade" style="--d:1.7s">12 subportadoras = 180 kHz</text>
+    <text x="500" y="92" class="fade" style="--d:2.2s">sinal de referência:</text>
+    <text x="500" y="118" class="fade" style="--d:2.2s">potência fixa e conhecida</text>
+    <text x="500" y="262" class="fade" style="--d:2.6s">o resto: dados e controle,</text>
+    <text x="500" y="288" class="fade" style="--d:2.6s">varia com o tráfego</text>
+  </svg>
+  <figcaption><b>Figura 1.</b> Um bloco de recursos visto por uma antena. Os quatro quadradinhos hachurados levam o sinal de referência. O RSRP olha só para eles. O RSSI soma a potência das colunas inteiras em que eles aparecem.</figcaption>
+</figure>
+
+<h2><span class="n">2</span>RSRP: a força da referência</h2>
+<p>RSRP é a sigla de <i>Reference Signal Received Power</i>. É a potência média recebida em <b>um</b> elemento de recurso que leva sinal de referência. O valor é dado em dBm e fica entre −140 e −44 dBm.</p>
+<p>Como olha só para a referência, o RSRP não muda com a carga da célula nem com a largura de banda. Ele depende do caminho entre a torre e o celular: distância, paredes, relevo, antenas. Por isso é a medida de <b>cobertura</b>.</p>
+
+<table>
+  <tr><th>RSRP</th><th>Leitura prática</th></tr>
+  <tr><td class="num">acima de −80 dBm</td><td>Excelente. Perto da torre ou com visada livre.</td></tr>
+  <tr><td class="num">−80 a −90 dBm</td><td>Bom.</td></tr>
+  <tr><td class="num">−90 a −100 dBm</td><td>Regular. Funciona, com taxas menores.</td></tr>
+  <tr><td class="num">abaixo de −100 dBm</td><td>Fraco. Borda de célula ou ambiente fechado.</td></tr>
+</table>
+<p class="small">As faixas são regras de bolso usadas em campo. Cada operadora ajusta os próprios limites.</p>
+
+<h2><span class="n">3</span>RSSI: tudo o que chega</h2>
+<p>O <em class="term">RSSI</em> (<i>Received Signal Strength Indicator</i>) é a potência total que o celular capta na banda medida, nos símbolos que têm sinal de referência. Entra tudo: a referência e os dados da própria célula, o sinal das células vizinhas na mesma frequência e o ruído.</p>
+<p>Sozinho, o RSSI engana. Ele sobe quando a célula está cheia e sobe quando há interferência. Um RSSI alto pode ser sinal bom ou barulho alto. Ele serve como o denominador da próxima medida.</p>
+
+<h2><span class="n">4</span>RSRQ: a parte que interessa</h2>
+<p>RSRQ é a sigla de <i>Reference Signal Received Quality</i>. Ele compara o RSRP com o RSSI:</p>
+
+<div class="formula" aria-label="RSRQ é igual a N vezes RSRP dividido por RSSI">
+  <span>RSRQ</span><span>=</span>
+  <span class="frac"><span>N × RSRP</span><span>RSSI</span></span>
+</div>
+
+<p><b>N</b> é o número de blocos de recursos da banda medida. Ele entra porque o RSRP vale para um quadradinho e o RSSI vale para a banda toda. O resultado é dado em dB e fica entre −19,5 e −3 dB. Quanto mais perto de −3, mais limpo.</p>
+<p>O valor nunca passa de −3 dB, mesmo sem interferência nenhuma. Com uma antena transmissora, cada bloco tem 2 quadradinhos de referência por símbolo medido. Se a célula está vazia, o RSSI de um bloco vale 2 × RSRP, e a razão dá 1/2, ou −3 dB. Se a célula está cheia, os 12 quadradinhos do símbolo têm potência, a razão cai para 1/12 e o RSRQ vai a −10,8 dB.</p>
+
+<div class="note">Uma célula sozinha e lotada já marca −10,8 dB.<br>Abaixo disso, tem mais alguém falando: interferência ou ruído.</div>
+
+<table>
+  <tr><th>RSRQ</th><th>Leitura prática</th></tr>
+  <tr><td class="num">acima de −10 dB</td><td>Excelente. Pouca carga e pouca interferência.</td></tr>
+  <tr><td class="num">−10 a −15 dB</td><td>Bom a regular. Célula carregada ou alguma interferência.</td></tr>
+  <tr><td class="num">abaixo de −15 dB</td><td>Ruim. Interferência forte ou sinal perto do ruído.</td></tr>
+</table>
+
+<h2><span class="n">5</span>Experimente</h2>
+<p>O celular abaixo está preso à torre A. A torre B usa a mesma frequência, então tudo o que ela transmite é interferência. Mova o celular, encha as células e ponha paredes no caminho.</p>
+
+<div class="sim wide" id="sim">
+  <p class="sim-title">Duas torres, um celular</p>
+  <svg viewBox="0 0 800 300" role="img" aria-label="Desenho de duas torres com um celular entre elas">
+    <defs><clipPath id="sky"><rect x="-20" y="-40" width="840" height="290"/></clipPath></defs>
+    <g filter="url(#boil)">
+      <g clip-path="url(#sky)"><g id="ringsA"></g><g id="ringsB"></g></g>
+      <g id="scene"></g>
+      <g id="phone"></g>
+    </g>
+    <text x="80" y="288" text-anchor="middle">A · servidora</text>
+    <text x="720" y="288" text-anchor="middle">B · vizinha</text>
+    <text id="dist" x="400" y="30" text-anchor="middle"></text>
+  </svg>
+
+  <div class="controls">
+    <label>Posição do celular <output id="oPos"></output>
+      <input id="pos" type="range" min="0.05" max="1.95" step="0.01" value="0.6"></label>
+    <label>Paredes no caminho <output id="oWall"></output>
+      <input id="wall" type="range" min="0" max="40" step="1" value="0"></label>
+    <label>Carga da torre A <output id="oLa"></output>
+      <input id="la" type="range" min="0" max="100" step="1" value="50"></label>
+    <label>Carga da torre B <output id="oLb"></output>
+      <input id="lb" type="range" min="0" max="100" step="1" value="50"></label>
+  </div>
+
+  <div class="reads">
+    <div class="read"><div class="lab">RSRP da torre A</div><div class="val"><span id="vRsrp"></span> <small>dBm</small></div>
+      <div class="meter"><i id="mRsrp"></i></div><div class="ends"><span>−140</span><span>−44</span></div><div class="cls" id="cRsrp"></div></div>
+    <div class="read"><div class="lab">RSRQ</div><div class="val"><span id="vRsrq"></span> <small>dB</small></div>
+      <div class="meter"><i id="mRsrq"></i></div><div class="ends"><span>−19,5</span><span>−3</span></div><div class="cls" id="cRsrq"></div></div>
+    <div class="read"><div class="lab">RSSI em 10 MHz (N = 50)</div><div class="val"><span id="vRssi"></span> <small>dBm</small></div>
+      <div class="meter"><i id="mRssi"></i></div><div class="ends"><span>−110</span><span>−20</span></div><div class="cls">&nbsp;</div></div>
+  </div>
+
+  <div class="lab small" style="margin-top:8px">Do que é feito o RSSI neste ponto</div>
+  <svg viewBox="0 0 800 52" role="img" aria-label="Barra com a composição do RSSI"><g id="stack" filter="url(#boil)"></g></svg>
+  <div class="legend">
+    <span><i class="sw a"></i>referência de A <b id="pA"></b></span>
+    <span><i class="sw b"></i>dados de A <b id="pD"></b></span>
+    <span><i class="sw c"></i>torre B <b id="pB"></b></span>
+    <span><i class="sw"></i>ruído <b id="pN"></b></span>
+  </div>
+  <p class="verdict" id="verdict" aria-live="polite"></p>
+</div>
+
+<p class="small">Modelo simplificado: perda de propagação urbana em 2 GHz, uma antena transmissora por torre, ruído térmico com 7 dB de figura de ruído. Os números servem para ver as tendências, não para dimensionar uma rede.</p>
+
+<p>Três coisas para tentar:</p>
+<ul class="sum">
+  <li>Deixe o celular parado e suba só as <b>paredes</b>. O RSRP despenca e o RSRQ quase não se mexe, porque A e B caem juntas. Ele só piora quando o sinal chega perto do ruído.</li>
+  <li>Zere as paredes e suba a <b>carga da torre A</b>. O RSRP fica igual. O RSRQ cai, sem que nada tenha mudado no caminho do sinal.</li>
+  <li>Leve o celular para <b>perto da torre B</b>. O RSRQ desaba, porque a vizinha chega mais forte que a servidora. É a situação que o handover evita.</li>
+</ul>
+
+<h2><span class="n">6</span>Lendo os dois juntos</h2>
+<p>Nenhum dos dois números conta a história sozinho. O par aponta a causa do problema.</p>
+
+<div class="quad">
+  <div><h3>RSRP bom · RSRQ bom</h3>Cobertura boa e canal limpo. É o cenário de taxas altas.</div>
+  <div><h3>RSRP bom · RSRQ ruim</h3>O sinal chega forte, mas sujo. Procure interferência de vizinhas ou célula sobrecarregada.</div>
+  <div><h3>RSRP ruim · RSRQ bom</h3>Sinal fraco, sem concorrência. Típico de área rural ou de ambiente fechado. É problema de cobertura.</div>
+  <div><h3>RSRP ruim · RSRQ ruim</h3>Borda de célula com vizinhas na mesma intensidade, ou sinal no nível do ruído. Quedas e taxas baixas.</div>
+</div>
+
+<h2><span class="n">7</span>Em resumo</h2>
+<ul class="sum">
+  <li><b>RSRP</b> mede a potência de um elemento de referência, em dBm. Indica cobertura e não depende da carga.</li>
+  <li><b>RSSI</b> mede tudo o que chega na banda: célula servidora, vizinhas e ruído.</li>
+  <li><b>RSRQ</b> = N × RSRP / RSSI, em dB. Indica quanto do que chega é a célula medida. Cai com carga, interferência e ruído.</li>
+  <li>Sem interferência, o RSRQ fica entre −3 dB (célula vazia) e −10,8 dB (célula cheia).</li>
+  <li>No 5G as medidas equivalentes são o SS-RSRP e o SS-RSRQ, feitas sobre o bloco de sincronismo (SSB).</li>
+</ul>
+
+<h2><span class="n">8</span>Confira se entendeu</h2>
+<details><summary>Um celular marca RSRP de −75 dBm e RSRQ de −17 dB. O que está acontecendo?</summary>
+  <p>O sinal chega forte, então cobertura não é o problema. O RSRQ baixo indica muita potência que não é da referência: interferência de células vizinhas na mesma frequência, provavelmente somada a carga alta.</p></details>
+<details><summary>A banda da célula passa de 10 para 20 MHz. O RSRP muda? E o RSRQ?</summary>
+  <p>Nenhum dos dois muda por causa disso. O RSRP vale para um elemento de recurso. No RSRQ, o RSSI dobra e o N também dobra, e os dois efeitos se cancelam.</p></details>
+<details><summary>Por que o RSRQ de uma célula isolada piora de madrugada para o horário de pico?</summary>
+  <p>No pico a célula transmite dados em mais elementos de recurso. O RSSI sobe e o RSRP fica igual, então a razão cai de perto de −3 dB para perto de −10,8 dB.</p></details>
+</main>
+
+<footer>
+  <div>anterior<b>← Aula 2 · dB e dBm</b></div>
+  <div style="text-align:right">a seguir<b>Aula 4 · SINR →</b></div>
+</footer>
+
+<script>
+(() => {
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- tema ---------- */
+const root = document.documentElement, btn = $('theme');
+const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+const label = () => btn.textContent = isDark() ? 'tema claro' : 'tema escuro';
+try { const t = localStorage.getItem('rf-theme'); if (t) root.dataset.theme = t; } catch (e) {}
+label();
+btn.addEventListener('click', () => {
+  root.dataset.theme = isDark() ? 'light' : 'dark';
+  try { localStorage.setItem('rf-theme', root.dataset.theme); } catch (e) {}
+  label();
+});
+
+/* ---------- progresso de leitura ---------- */
+const prog = $('progress');
+const onScroll = () => { const h = document.documentElement; prog.style.width = (100 * h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) + '%'; };
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+/* ---------- traço de caneta ---------- */
+let seed = 11;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const j = a => (rnd() - .5) * 2 * a;
+const f = n => n.toFixed(1);
+function path(g, d, cls = 's', delay) {
+  const p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', d); p.setAttribute('class', cls);
+  if (delay != null) { p.setAttribute('pathLength', '1'); p.style.setProperty('--d', delay + 's'); }
+  g.appendChild(p); return p;
+}
+const stroke = (x1, y1, x2, y2, w = 1.6) =>
+  `M${f(x1 + j(w))} ${f(y1 + j(w))} Q${f((x1 + x2) / 2 + j(w * 1.5))} ${f((y1 + y2) / 2 + j(w * 1.5))} ${f(x2 + j(w))} ${f(y2 + j(w))}`;
+/* cada linha é riscada duas vezes, como quem reforça o traço */
+function line(g, x1, y1, x2, y2, o = {}) {
+  const cls = 's ' + (o.cls || '') + (o.delay != null ? ' draw' : '');
+  path(g, stroke(x1, y1, x2, y2, o.w), cls, o.delay);
+  if (!o.single) path(g, stroke(x1, y1, x2, y2, o.w), cls, o.delay != null ? o.delay + .08 : null);
+}
+function box(g, x, y, w, h, o = {}) {
+  line(g, x, y, x + w, y, o); line(g, x + w, y, x + w, y + h, o);
+  line(g, x + w, y + h, x, y + h, o); line(g, x, y + h, x, y, o);
+}
+function hatch(x, y, w, h, gap, cross) {
+  let d = '';
+  for (let c = gap; c < w + h; c += gap) {
+    const xa = Math.min(c, w), ya = c - xa, yb = Math.min(c, h), xb = c - yb;
+    d += `M${f(x + xa + j(.5))} ${f(y + ya + j(.5))}L${f(x + xb + j(.5))} ${f(y + yb + j(.5))}`;
+    if (cross) d += `M${f(x + w - xa + j(.5))} ${f(y + ya + j(.5))}L${f(x + w - xb + j(.5))} ${f(y + yb + j(.5))}`;
+  }
+  return d;
+}
+
+/* o traço "treme" devagar, como animação feita à mão */
+if (!reduce) { let s = 1; setInterval(() => $('turb').setAttribute('seed', s = s % 6 + 1), 190); }
+
+/* ---------- figura 1: a grade ---------- */
+(() => {
+  const g = $('grid'), X = 120, Y = 36, CW = 48, CH = 26, C = 7, Rw = 12;
+  let t = 0;
+  for (let c = 0; c <= C; c++) line(g, X + c * CW, Y, X + c * CW, Y + Rw * CH, { delay: (t += .05), cls: c % C ? 'thin' : '', single: !!(c % C) });
+  for (let r = 0; r <= Rw; r++) line(g, X, Y + r * CH, X + C * CW, Y + r * CH, { delay: (t += .05), cls: r % Rw ? 'thin' : '', single: !!(r % Rw) });
+  const rs = [[0, 0], [0, 6], [4, 3], [4, 9]];
+  rs.forEach(([c, r], i) => {
+    const x = X + c * CW, y = Y + (Rw - 1 - r) * CH;
+    const p = path(g, hatch(x + 2, y + 2, CW - 4, CH - 4, 4), 's fade'); p.style.setProperty('--d', (1.2 + i * .12) + 's');
+    box(g, x, y, CW, CH, { delay: 1.2 + i * .12, w: 1 });
+  });
+  /* setas das anotações */
+  const a1 = path(g, 'M492 96 C440 84 400 96 366 118', 's draw', 2.2);
+  path(g, 'M366 118 l13 -1 M366 118 l7 -11', 's draw', 2.5);
+  const a2 = path(g, 'M492 270 C462 276 448 262 436 240', 's draw', 2.6);
+  path(g, 'M436 240 l1 13 M436 240 l10 7', 's draw', 2.9);
+  new IntersectionObserver((es, ob) => es.forEach(e => { if (e.isIntersecting) { $('fig-grid').classList.add('inked'); ob.disconnect(); } }), { threshold: .35 }).observe($('fig-grid'));
+})();
+
+/* ---------- simulação ---------- */
+(() => {
+  const GY = 250, XA = 80, XB = 720, TOP = 96;
+  const scene = $('scene'), phone = $('phone'), stack = $('stack');
+  /* chão e torres: desenhados uma vez */
+  seed = 5;
+  line(scene, 10, GY, 790, GY, { w: 2.2 });
+  function tower(x) {
+    line(scene, x - 20, GY, x, TOP); line(scene, x + 20, GY, x, TOP);
+    for (let i = 0; i < 4; i++) {
+      const y1 = GY - 12 - i * 34, y2 = y1 - 30, w1 = 20 * (GY - y1) / (GY - TOP), w2 = 20 * (GY - y2) / (GY - TOP);
+      line(scene, x - 20 + w1, y1, x + 20 - w2, y2, { single: true, cls: 'thin' });
+      line(scene, x + 20 - w1, y1, x - 20 + w2, y2, { single: true, cls: 'thin' });
+    }
+    line(scene, x, TOP, x, TOP - 22);
+    box(scene, x - 11, TOP - 20, 6, 22, { w: .8 }); box(scene, x + 5, TOP - 20, 6, 22, { w: .8 });
+  }
+  tower(XA); tower(XB);
+  /* ondas */
+  const rings = (g, x) => [0, 1, 2].map(() => { const c = document.createElementNS(NS, 'circle'); c.setAttribute('cx', x); c.setAttribute('cy', TOP - 10); c.setAttribute('class', 's thin'); g.appendChild(c); return c; });
+  const rA = rings($('ringsA'), XA), rB = rings($('ringsB'), XB);
+  let la = .5, lb = .5;
+  function wave(t) {
+    [[rA, la], [rB, lb]].forEach(([rs, load]) => rs.forEach((c, i) => {
+      const ph = reduce ? (i + 1) / 3.2 : (t / 3800 + i / 3) % 1;
+      c.setAttribute('r', f(14 + ph * 250)); c.style.opacity = ((1 - ph) * (.25 + .75 * load)).toFixed(2);
+    }));
+    if (!reduce) requestAnimationFrame(wave);
+  }
+  requestAnimationFrame(wave);
+
+  const fmt = (v, d = 1) => v.toFixed(d).replace('.', ',').replace('-', '−');
+  const db = x => 10 * Math.log10(x), lin = x => Math.pow(10, x / 10);
+  const pct = x => (x < .001 ? '<0,1' : fmt(x * 100, x < .1 ? 1 : 0)) + '%';
+  const clamp = x => Math.max(0, Math.min(1, x));
+  const EIRP_RE = 33;                          /* 18 dBm por elemento de referência + 15 dBi de antena */
+  const NOISE_RE = lin(-174 + db(15000) + 7);  /* ruído térmico em 15 kHz, figura de ruído de 7 dB */
+  const pl = d => 128.1 + 37.6 * Math.log10(d);
+
+  function update() {
+    const d = +$('pos').value, wall = +$('wall').value;
+    la = $('la').value / 100; lb = $('lb').value / 100;
+    const sdB = EIRP_RE - pl(d) - wall, idB = EIRP_RE - pl(2 - d) - wall;
+    const S = lin(sdB), I = lin(idB);
+    const ref = 2 * S, dat = 10 * la * S, nb = I * (2 + 10 * lb), noi = 12 * NOISE_RE;
+    const rb = ref + dat + nb + noi;           /* RSSI de um bloco de recursos */
+    const rsrq = db(S / rb), rssi = db(rb * 50);
+
+    $('oPos').textContent = fmt(d, 2) + ' km de A';
+    $('oWall').textContent = wall ? '−' + wall + ' dB' : 'nenhuma';
+    $('oLa').textContent = Math.round(la * 100) + '%'; $('oLb').textContent = Math.round(lb * 100) + '%';
+    $('dist').textContent = fmt(d, 2) + ' km de A · ' + fmt(2 - d, 2) + ' km de B';
+    $('vRsrp').textContent = fmt(sdB); $('vRsrq').textContent = fmt(rsrq); $('vRssi').textContent = fmt(rssi);
+    $('mRsrp').style.left = clamp((sdB + 140) / 96) * 100 + '%';
+    $('mRsrq').style.left = clamp((rsrq + 19.5) / 16.5) * 100 + '%';
+    $('mRssi').style.left = clamp((rssi + 110) / 90) * 100 + '%';
+    $('cRsrp').textContent = sdB >= -80 ? 'excelente' : sdB >= -90 ? 'bom' : sdB >= -100 ? 'regular' : 'fraco';
+    $('cRsrq').textContent = rsrq < -19.5 ? 'abaixo da faixa reportada' : rsrq >= -10 ? 'excelente' : rsrq >= -15 ? 'bom a regular' : 'ruim';
+    $('pA').textContent = pct(ref / rb); $('pD').textContent = pct(dat / rb); $('pB').textContent = pct(nb / rb); $('pN').textContent = pct(noi / rb);
+
+    const strong = sdB >= -100, clean = rsrq >= -12;
+    $('verdict').textContent =
+      idB > sdB + 3 ? 'A torre B já chega mais forte que a A. Numa rede real, o celular já teria feito handover para a B.' :
+      strong && clean ? 'Sinal forte e limpo: quase tudo o que chega é da torre A.' :
+      strong ? 'Sinal forte, mas sujo. A potência extra vem da carga de A e da torre B, não da referência.' :
+      clean ? 'Sinal fraco, porém limpo. É um problema de cobertura, não de interferência.' :
+      'Sinal fraco e sujo. A referência disputa espaço com a vizinha e com o ruído.';
+
+    /* celular */
+    seed = 23; phone.textContent = '';
+    const px = XA + 34 + (d - .05) / 1.9 * (XB - XA - 68);
+    box(phone, px - 9, GY - 40, 18, 34, { w: .8 });
+    line(phone, px - 4, GY - 11, px + 4, GY - 11, { single: true, cls: 'thin', w: .4 });
+    const bars = sdB >= -80 ? 4 : sdB >= -90 ? 3 : sdB >= -100 ? 2 : sdB >= -115 ? 1 : 0;
+    for (let i = 0; i < 4; i++) {
+      const bx = px - 13 + i * 8, bh = 6 + i * 5;
+      if (i < bars) path(phone, hatch(bx, GY - 50 - bh, 5, bh, 2.2), 's thin');
+      box(phone, bx, GY - 50 - bh, 5, bh, { w: .4, single: true, cls: 'thin' });
+    }
+    path(phone, `M${XA + 6} ${TOP - 12} Q${(XA + px) / 2} ${TOP - 40} ${f(px)} ${GY - 78}`, 's thin').setAttribute('stroke-dasharray', '2 7');
+
+    /* barra de composição do RSSI */
+    seed = 41; stack.textContent = '';
+    const X0 = 6, W = 788, Y0 = 8, H = 34; let x = X0;
+    [[ref, 3.2, false], [dat, 7, false], [nb, 7, true], [noi, 0, false]].forEach(([v, gap], i, arr) => {
+      const w = W * v / rb;
+      if (gap && w > 2) path(stack, hatch(x, Y0, w, H, gap, arr[i][2]), 's thin');
+      x += w;
+      if (i < 3 && w > 1.5 && x < X0 + W - 1.5) line(stack, x, Y0, x, Y0 + H, { single: true, w: .6 });
+    });
+    box(stack, X0, Y0, W, H, { w: 1 });
+  }
+  ['pos', 'wall', 'la', 'lb'].forEach(id => $(id).addEventListener('input', update));
+  update();
+})();
+})();
+</script>
+</body>
+</html>

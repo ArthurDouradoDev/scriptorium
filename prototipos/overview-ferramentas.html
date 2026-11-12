@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ferramentas · de onde vem o dado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --ink:#0f2167;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --hand:"Caveat","Segoe Print","Bradley Hand",cursive;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){ --bg:#000000; --ink:#ffffff; } }
+:root[data-theme="dark"]{ --bg:#000000; --ink:#ffffff; }
+:root{
+  --muted:color-mix(in srgb,var(--ink) 62%,var(--bg));
+  --rule:color-mix(in srgb,var(--ink) 18%,var(--bg));
+  --wash:color-mix(in srgb,var(--ink) 5%,var(--bg));
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--serif);font-size:19px;line-height:1.65;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+.bar{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--rule);transition:background .3s}
+.bar-in{max-width:900px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:15px}
+.crumb{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumb b{color:var(--ink);font-weight:600}
+#theme{font:inherit;font-family:var(--hand);font-size:20px;line-height:1;color:var(--ink);background:none;border:1.5px solid var(--ink);border-radius:999px;padding:5px 14px 7px;cursor:pointer;white-space:nowrap}
+#theme:hover{background:var(--ink);color:var(--bg)}
+#progress{height:2px;background:var(--ink);width:0}
+main{max-width:680px;margin:0 auto;padding:0 16px}
+.wide{position:relative;left:50%;transform:translateX(-50%);width:min(900px,100vw - 32px)}
+header.hero{padding:72px 0 24px}
+.kicker{font-family:var(--hand);font-size:26px;line-height:1}
+h1{font-size:clamp(40px,8vw,68px);line-height:1.02;letter-spacing:-.02em;font-weight:600;margin:10px 0 18px}
+.lede{font-size:23px;line-height:1.45;color:var(--muted);margin:0}
+h2{font-size:32px;line-height:1.15;font-weight:600;letter-spacing:-.01em;margin:72px 0 12px}
+h2 .n{font-family:var(--hand);font-weight:500;font-size:30px;margin-right:10px;color:var(--muted)}
+h3{font-size:22px;line-height:1.2;font-weight:600;margin:34px 0 8px}
+p{margin:0 0 18px}
+em.term{font-style:normal;font-weight:600;border-bottom:1.5px solid var(--ink)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.82em;background:var(--wash);padding:1px 5px;border-radius:4px;overflow-wrap:anywhere}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px 10px;margin:28px 0 0}
+nav.toc a{font-family:var(--hand);font-size:21px;line-height:1;color:var(--ink);text-decoration:none;border:1.2px solid var(--rule);border-radius:999px;padding:5px 13px 7px}
+nav.toc a:hover{border-color:var(--ink)}
+figure{margin:36px 0}
+.scroll{overflow-x:auto}
+.scroll svg{min-width:720px}
+figcaption{font-size:16px;line-height:1.45;color:var(--muted);margin-top:10px;max-width:680px}
+figcaption b{color:var(--ink)}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg .s{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+svg .thin{stroke-width:1}
+svg .bold{stroke-width:2.4}
+svg .dash{stroke-dasharray:7 6}
+svg text{font-family:var(--hand);font-size:21px;fill:var(--ink)}
+svg text.t1{font-weight:700;font-size:23px}
+svg .s.paper{fill:var(--bg)}
+.draw{stroke-dasharray:1;stroke-dashoffset:1}
+.fade{opacity:0}
+.inked .draw{animation:draw .5s ease forwards;animation-delay:var(--d,0s)}
+.inked .fade{animation:fade .45s ease forwards;animation-delay:var(--d,0s)}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fade{to{opacity:1}}
+.note{font-family:var(--hand);font-size:23px;line-height:1.25;border-left:2px solid var(--ink);padding:2px 0 2px 16px;margin:26px 0}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:17px;margin:22px 0}
+th,td{text-align:left;padding:9px 12px 9px 0;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-weight:600;border-bottom:1.5px solid var(--ink)}
+td.k{white-space:nowrap;font-weight:600}
+.small{font-size:15.5px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:14.5px;color:var(--muted);margin-top:8px}
+.legend span{white-space:nowrap}
+.sw{display:inline-block;width:18px;height:12px;border:1.2px solid var(--ink);vertical-align:-1px;margin-right:6px}
+.sw.a{background:repeating-linear-gradient(135deg,var(--ink) 0 1px,transparent 1px 4px)}
+.sw.m{border-style:dashed}
+.sw.o{border-width:2.4px}
+.quad{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1.5px solid var(--ink);border-radius:14px;overflow:hidden;margin:26px 0}
+.quad div{padding:16px 18px;font-size:17px;line-height:1.45;border-bottom:1px solid var(--rule)}
+.quad div:nth-child(odd){border-right:1px solid var(--rule)}
+.quad div.full{grid-column:1/-1;border-right:0;border-bottom:0}
+.quad h3{font-family:var(--hand);font-size:25px;line-height:1.1;margin:0 0 6px;font-weight:700}
+ul.sum,ol.sum{padding-left:22px;margin:0 0 18px}
+ul.sum li,ol.sum li{margin-bottom:8px}
+details{border-bottom:1px solid var(--rule);padding:12px 0}
+summary{cursor:pointer;font-weight:600}
+details p{margin:10px 0 2px;color:var(--muted)}
+footer{max-width:680px;margin:80px auto 0;padding:22px 16px 60px;border-top:1px solid var(--rule);font-size:15.5px;color:var(--muted)}
+@media (max-width:640px){
+  body{font-size:18px}
+  .wide{width:100%}
+  .quad{grid-template-columns:1fr}
+  .quad div{border-right:0!important}
+  header.hero{padding-top:44px}
+}
+@media (prefers-reduced-motion:reduce){
+  .draw{stroke-dashoffset:0}.fade{opacity:1}
+  .inked .draw,.inked .fade{animation:none}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <filter id="boil" x="-5%" y="-5%" width="110%" height="110%">
+    <feTurbulence id="turb" type="fractalNoise" baseFrequency="0.035" numOctaves="2" seed="1" result="n"/>
+    <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<div class="bar">
+  <div class="bar-in">
+    <div class="crumb"><b>Ferramentas</b> · visão geral · fluxo de dados</div>
+    <button id="theme" type="button" aria-label="Alternar tema claro e escuro">tema escuro</button>
+  </div>
+  <div id="progress"></div>
+</div>
+
+<main>
+<header class="hero">
+  <div class="kicker">visão geral</div>
+  <h1>Ferramentas do NPM e seus fluxos principais</h1>
+  <p class="lede">Cinco ferramentas, três jeitos de buscar dado e dois de transformar dado em relatório. O que cada uma faz e o que dá para reaproveitar na próxima.</p>
+  <nav class="toc" aria-label="Seções">
+    <a href="#mapa">mapa geral</a><a href="#d1">D-1</a><a href="#w1">W-1</a><a href="#se">SmartEvents</a><a href="#mdt">MDT</a><a href="#dt">DT</a><a href="#conversa">a conversa</a><a href="#req">requisições</a><a href="#auto">automações</a><a href="#pecas">peças</a>
+  </nav>
+</header>
+
+<h2 id="mapa"><span class="n">1</span>O mapa geral</h2>
+<p>As ferramentas se dividem em dois grupos. <b>D-1</b>, <b>W-1</b> e <b>SmartEvents</b> sabem <em class="term">buscar</em>: entram num sistema da operadora, pedem um relatório e trazem os números. <b>MDT</b> e <b>DT</b> sabem <em class="term">processar</em>: recebem arquivos grandes e devolvem mapas, gráficos, análises e apresentações prontas.</p>
+
+<figure class="wide" id="fig-mapa">
+  <div class="scroll"><svg id="svg-mapa" role="img" aria-label="Quatro fontes à esquerda (Altaia, MAE, SFTP da gerência e arquivos NEMO ou PHU) ligadas às cinco ferramentas no centro, que geram quatro tipos de entrega à direita."></svg></div>
+  <div class="legend">
+    <span><i class="sw a"></i>fonte externa</span>
+    <span><i class="sw"></i>ferramenta ou etapa</span>
+    <span><i class="sw m"></i>passo manual</span>
+    <span><i class="sw o"></i>entrega</span>
+  </div>
+  <figcaption><b>Figura 1.</b> Cada fonte alimenta uma ferramenta. D-1 e W-1 dividem a mesma fonte e o mesmo módulo de coleta.</figcaption>
+</figure>
+
+<div class="tw"><table>
+  <tr><th>Ferramenta</th><th>Fonte</th><th>Ritmo</th><th>Entrega</th></tr>
+  <tr><td class="k">D-1</td><td>Altaia, por célula</td><td>diário</td><td>Ofensores 3G, 4G e 5G em rascunho de e-mail</td></tr>
+  <tr><td class="k">W-1</td><td>Altaia, por site</td><td>semanal</td><td>Tabela de desvios dos clusters, com mapa municipal</td></tr>
+  <tr><td class="k">SmartEvents</td><td>MAE (gerência)</td><td>a cada 1 a 2 min</td><td>Painel ao vivo de um evento, com alertas</td></tr>
+  <tr><td class="k">MDT</td><td>SFTP da gerência + Genex</td><td>semanal</td><td>Mapas e apresentação de áreas-problema</td></tr>
+  <tr><td class="k">DT</td><td>Arquivos de drive test</td><td>por campanha</td><td>Análise de eventos, PPTX, Excel e PDF</td></tr>
+</table></div>
+
+<h2 id="d1"><span class="n">2</span>D-1: os ofensores de ontem</h2>
+<p>O <b>AutomatizarD-1</b> baixa do Altaia os contadores do dia anterior, célula por célula, para 3G, 4G e 5G. Separa os piores, monta o consolidado e deixa os e-mails prontos no Outlook para revisão. Nada é enviado sozinho.</p>
+
+<figure class="wide" id="fig-d1">
+  <div class="scroll"><svg id="svg-d1" role="img" aria-label="Fluxo do D-1: Altaia, login, três requisições, CSV validado, normalização, consolidado, Banco RF opcional e rascunhos no Outlook."></svg></div>
+  <figcaption><b>Figura 2.</b> A coleta faz um login só e depois repete as três requisições para cada regional e tecnologia. Um CSV que falha na validação fica numa pasta temporária e não entra no relatório.</figcaption>
+</figure>
+
+<p>Os mesmos arquivos também podem vir do MicroStrategy, arrastados à mão para a tela. O consolidado feito a partir do Altaia ainda está marcado como homologação.</p>
+<p class="small">Pasta: <code>Projetos/AutomatizarD-1</code>. A coleta mora em <code>app/core/altaia/</code>.</p>
+
+<h2 id="w1"><span class="n">3</span>W-1: a semana contra o histórico</h2>
+<p>O <b>AutomatizarCluster</b> é o irmão semanal do D-1. Baixa do Altaia os dados diários por site, de 4G e 5G, e compara os últimos 7 dias com semanas de referência. O resultado é a tabela de desvios, um rascunho por regional (TSP, TSL, TRJ e TNE).</p>
+
+<figure class="wide" id="fig-w1">
+  <div class="scroll"><svg id="svg-w1" role="img" aria-label="Fluxo do W-1: Altaia, login e requisições, validação, importação na planilha, definição do período, cálculo, prévia com anexo e mapas, rascunho por regional."></svg></div>
+  <figcaption><b>Figura 3.</b> A base histórica vive numa planilha <code>.xlsm</code>. O aplicativo importa pela macro, sem duplicar linhas, e calcula o relatório em Python a partir dessa base.</figcaption>
+</figure>
+
+<p>A referência padrão são as semanas W−11, W−10 e W−9. A média delas é a base de cada indicador, e o desvio-padrão dá a banda de cores. Um município abaixo da banda entra no corpo do e-mail e é pintado no mapa.</p>
+<p class="small">Pasta: <code>Projetos/AutomatizarCluster</code>. Coleta em <code>app/core/altaia/</code>, cálculo em <code>calculo_regional.py</code>, mapa em <code>mapa_regional.py</code> e <code>renderizador_mapa.py</code>.</p>
+
+<h2 id="se"><span class="n">4</span>SmartEvents: o evento ao vivo</h2>
+<p>O <b>SmartEvents</b> acompanha a rede durante um evento grande. Consulta a gerência (MAE) de dois em dois minutos para os KPIs das células e de minuto em minuto para o sinal dos VIPs. Grava tudo num banco local e mostra em mapa, gráficos e alertas.</p>
+
+<figure class="wide" id="fig-se">
+  <div class="scroll"><svg id="svg-se" role="img" aria-label="Fluxo do SmartEvents: MAE, sessão renovada, coletor HTTP, SQLite por evento, alertas, ponte para a interface, painel e pacote de exportação."></svg></div>
+  <figcaption><b>Figura 4.</b> Duas linhas de coleta rodam em segundo plano. A sessão da gerência expira, e um navegador escondido refaz o login quando isso acontece.</figcaption>
+</figure>
+
+<p>Um servidor central (FastAPI) guarda o cadastro dos eventos e dos VIPs. Cada computador da equipe sincroniza com ele e faz a própria coleta.</p>
+<p class="small">Pasta: <code>Projetos/smart-events</code>. Coleta em <code>core/collector.py</code>, sessão em <code>core/session_renew.py</code>, agendador em <code>core/scheduler.py</code>.</p>
+
+<h2 id="mdt"><span class="n">5</span>MDT: o mapa que o celular desenha</h2>
+<p>No MDT, os próprios celulares dos clientes reportam medidas com posição. A ferramenta <b>MDT</b> baixa essas coletas dos servidores da gerência, organiza por cluster e semana e, depois do processamento no Genex, gera os mapas e a apresentação das áreas-problema.</p>
+
+<figure class="wide" id="fig-mdt">
+  <div class="scroll"><svg id="svg-mdt" role="img" aria-label="Fluxo do MDT: lista de sites a partir da EP, task manual no iMaster, SFTP da gerência, download paralelo, Genex manual, extração do report, mapas e áreas-problema, apresentação PPTX."></svg></div>
+  <figcaption><b>Figura 5.</b> Dois passos ainda são manuais: criar a task de coleta no iMaster e rodar o Genex. O resto é automático, inclusive o download agendado.</figcaption>
+</figure>
+
+<p>O download usa várias conexões ao mesmo tempo e retoma arquivos incompletos. A montagem do PPTX leva cerca de dois minutos; o tempo grande do processo está no Genex.</p>
+<p class="small">Pasta: <code>Projetos/MDT</code>. Download em <code>collect_mdt.py</code>, mapas em <code>app/maps/</code>, apresentação em <code>app/core/presentation/</code>.</p>
+
+<h2 id="dt"><span class="n">6</span>DT: o drive test explicado</h2>
+<p>A <b>DT Tool</b> recebe a pasta de um drive test já pós-processado (formato NEMO ou PHU) e a base de células (EP). Cruza cada evento com o RF, o Layer 3 e o scanner, calcula KPIs, encontra as áreas-problema e monta o relatório.</p>
+
+<figure class="wide" id="fig-dt">
+  <div class="scroll"><svg id="svg-dt" role="img" aria-label="Fluxo da DT Tool: pasta NEMO ou PHU e EP, inventário, normalização, análise, cache, interface, e relatórios em PPTX, Excel e PDF."></svg></div>
+  <figcaption><b>Figura 6.</b> A leitura pesada acontece uma vez. O resultado fica em cache, e a tela só recebe dados agregados e GeoJSON reduzido.</figcaption>
+</figure>
+
+<p>O motor geográfico foi escrito só com numpy e matplotlib, para o executável rodar em qualquer máquina. A especificação dos mapas veio do MDT.</p>
+<p class="small">Pasta: <code>Projetos/DT</code>. Camadas em <code>ingestion/</code>, <code>normalization/</code>, <code>analysis/</code> e <code>reporting/</code>.</p>
+
+<h2 id="conversa"><span class="n">7</span>Como a conversa funciona</h2>
+<p>Toda tela de sistema na web é uma conversa entre dois computadores. O seu, com o navegador, faz pedidos. O servidor, que guarda os dados, responde. Cada clique em "gerar relatório" vira um pedido escrito, a <em class="term">requisição</em>. O que aparece na tela é a <em class="term">resposta</em>.</p>
+
+<figure class="wide" id="fig-conv">
+  <div class="scroll"><svg id="svg-conv" role="img" aria-label="Um computador com navegador à esquerda e um servidor à direita. Uma seta leva o pedido do computador ao servidor e outra traz a resposta de volta."></svg></div>
+  <figcaption><b>Figura 7.</b> O navegador escreve o pedido e mostra a resposta. Quem decide o que volta é o servidor.</figcaption>
+</figure>
+
+<p>Um pedido tem quatro partes:</p>
+<div class="tw"><table>
+  <tr><th>Parte</th><th>O que diz</th><th>Exemplo</th></tr>
+  <tr><td class="k">Endereço</td><td>Para onde o pedido vai.</td><td>A página que gera o relatório.</td></tr>
+  <tr><td class="k">Método</td><td>O tipo de pedido.</td><td>GET busca algo. POST envia um formulário.</td></tr>
+  <tr><td class="k">Campos</td><td>O que você escolheu na tela.</td><td>Datas, regional, tecnologia, formato CSV.</td></tr>
+  <tr><td class="k">Cookie</td><td>O crachá que prova que você já fez login.</td><td>Um código que o servidor entregou na entrada.</td></tr>
+</table></div>
+
+<p>O servidor não vê a tela nem o mouse. Ele só lê o pedido. Se chegar um pedido igual ao do navegador, com um crachá válido, ele responde do mesmo jeito.</p>
+
+<h3>Onde a gente entra</h3>
+<p>O navegador continua fazendo o que só ele faz bem: a página de login. Depois o script assume, com o crachá na mão, e pede direto o que interessa.</p>
+
+<figure class="wide" id="fig-meio">
+  <div class="scroll"><svg id="svg-meio" role="img" aria-label="O navegador faz o login no servidor e recebe um cookie. O cookie passa para um script, que faz os mesmos pedidos ao servidor sem abrir a tela e recebe o CSV direto."></svg></div>
+  <figcaption><b>Figura 8.</b> O navegador aparece uma vez, no login. Todos os pedidos seguintes saem do script, sem tela e sem clique.</figcaption>
+</figure>
+
+<p>O script entra com o seu usuário e só alcança o que você alcança. Ele não abre porta nova: repete, mais rápido e quantas vezes for preciso, a conversa que você teria pela tela.</p>
+
+<div class="note">O servidor não sabe quem escreveu o pedido.<br>Ele confere o crachá e responde.</div>
+
+<h2 id="req"><span class="n">8</span>Como aproveitar as requisições</h2>
+<p>Nem o Altaia nem a gerência oferecem uma API pronta para a equipe. Mas o navegador conversa com eles por HTTP, e essa conversa pode ser gravada e repetida. É isso que D-1, W-1 e SmartEvents fazem: repetem o que o navegador faria, sem abrir a tela do relatório.</p>
+
+<figure class="wide" id="fig-req">
+  <div class="scroll"><svg id="svg-req" role="img" aria-label="Processo em oito passos: gerar o relatório no navegador com as ferramentas de desenvolvedor abertas, copiar as requisições, separar o fixo do variável, guardar como template, fazer login com Playwright, passar os cookies para uma sessão HTTP, reenviar a sequência e validar o arquivo."></svg></div>
+  <figcaption><b>Figura 9.</b> Os quatro primeiros passos são feitos uma vez por relatório, à mão. Os quatro últimos rodam a cada coleta.</figcaption>
+</figure>
+
+<ol class="sum">
+  <li><b>Gravar.</b> Abra o relatório no navegador com F12 na aba Rede e gere o arquivo uma vez, do jeito normal.</li>
+  <li><b>Copiar.</b> Salve as requisições que importam como cURL ou HAR. No Altaia são três. Na gerência são as consultas de resultado.</li>
+  <li><b>Separar.</b> Marque o que muda a cada pedido (datas, regional, usuário, nome do arquivo) e o que fica igual (endereço, campos do formulário, formato).</li>
+  <li><b>Guardar o molde.</b> O template leva só endereço e campos. Cookies e senhas nunca ficam nele.</li>
+  <li><b>Entrar.</b> O Playwright abre um navegador, preenche o login e espera a página inicial.</li>
+  <li><b>Trocar de mão.</b> Os cookies do navegador passam para uma sessão <code>requests</code>, que é rápida e não precisa de tela.</li>
+  <li><b>Repetir.</b> A sessão envia a sequência com as variáveis trocadas.</li>
+  <li><b>Conferir.</b> O arquivo é validado antes de ser usado: colunas, datas, regional, linhas.</li>
+</ol>
+
+<h3>No Altaia: três requisições em sequência</h3>
+<div class="tw"><table>
+  <tr><th>Nº</th><th>Pedido</th><th>O que faz</th><th>O que muda</th></tr>
+  <tr><td class="k">1</td><td>POST <code>reportDataManager</code></td><td>Configura o relatório.</td><td>Datas, nome, usuário e os filtros de Region, UF e ANF.</td></tr>
+  <tr><td class="k">2</td><td>POST <code>WFServlet</code></td><td>Gera o relatório. A resposta traz o nome do CSV (<code>PG_File=…</code>).</td><td>Datas e os mesmos filtros, no formato <code>whereField</code>.</td></tr>
+  <tr><td class="k">3</td><td>GET <code>WFServlet</code></td><td>Baixa o CSV.</td><td>O nome do arquivo que veio na resposta 2.</td></tr>
+</table></div>
+<p>O W-1 guarda os moldes como o cURL copiado do Chrome e lê esse texto na hora. O D-1 guarda como JSON já limpo, só com endereço e formulário. Uma regional nova não exige captura nova: o molde neutro recebe os filtros geográficos.</p>
+
+<h3>Na gerência (MAE): sessão guardada e consulta em laço</h3>
+<p>O SmartEvents guarda os cookies e o token de segurança num arquivo de sessão por regional. Cada ciclo consulta dois serviços: o resultado das tasks de monitoramento de desempenho (KPIs) e o resultado do trace de sinalização (VIPs).</p>
+<ul class="sum">
+  <li>O cabeçalho <code>roarand</code> precisa repetir o valor do cookie <code>roarand</code>. É a proteção contra requisição forjada.</li>
+  <li>Os POSTs precisam dos cabeçalhos <code>Origin</code> e <code>Referer</code>.</li>
+  <li>A task de monitoramento ou de trace é criada antes, na própria gerência. A ferramenta só lê o resultado dela.</li>
+</ul>
+
+<h3>Cuidados que valem para os dois</h3>
+<ul class="sum">
+  <li><b>Sessão expira.</b> Resposta 401 ou 403, ou a página de login no lugar do dado, significa entrar de novo e repetir o pedido.</li>
+  <li><b>Tempo esgotado no meio da sequência.</b> Recomece do passo 1. Repetir só a geração pode pedir um relatório com a configuração errada.</li>
+  <li><b>HTML no lugar de CSV.</b> Trate como falha, não como arquivo vazio.</li>
+  <li><b>O portal muda.</b> Quando um campo some ou troca de nome, o molde precisa de captura nova. Guarde as capturas originais ao lado do molde.</li>
+</ul>
+
+<div class="note">Para puxar um relatório novo do Altaia, o trabalho é capturar três requisições.<br>Login, sessão, filtros e validação já existem.</div>
+
+<h2 id="auto"><span class="n">9</span>Os casos de automação</h2>
+<p>Cada ferramenta resolveu um tipo de trabalho manual. A tabela reúne os tipos, a técnica usada e onde está o exemplo pronto.</p>
+
+<div class="tw"><table>
+  <tr><th>O que era manual</th><th>Como foi automatizado</th><th>Exemplo</th></tr>
+  <tr><td>Entrar num portal com usuário e senha</td><td>Playwright preenche o formulário e devolve os cookies.</td><td>D-1, W-1, SmartEvents</td></tr>
+  <tr><td>Gerar e baixar um relatório pela tela</td><td>Repetição das requisições com <code>requests</code>.</td><td>D-1, W-1</td></tr>
+  <tr><td>Olhar um indicador de tempos em tempos</td><td>Linhas de execução em segundo plano, com intervalo fixo e banco SQLite.</td><td>SmartEvents</td></tr>
+  <tr><td>Baixar muitos arquivos de vários servidores</td><td>SFTP paralelo com retomada (<code>paramiko</code>).</td><td>MDT</td></tr>
+  <tr><td>Rodar todo dia no mesmo horário</td><td>Agendador de Tarefas do Windows (<code>schtasks</code>).</td><td>MDT</td></tr>
+  <tr><td>Colar dados numa planilha com macro</td><td><code>xlwings</code> abre o Excel e chama a macro VBA.</td><td>W-1, D-1</td></tr>
+  <tr><td>Escrever o e-mail e anexar o relatório</td><td>Outlook por COM (<code>win32com</code>): cria o rascunho e para ali.</td><td>D-1, W-1</td></tr>
+  <tr><td>Montar a apresentação slide a slide</td><td><code>python-pptx</code> preenche um modelo aprovado.</td><td>MDT, DT</td></tr>
+  <tr><td>Pintar mapa no QGIS ou no MapInfo</td><td>Motor próprio em matplotlib, com basemap em cache.</td><td>MDT, DT, W-1</td></tr>
+  <tr><td>Ler mensagem de Layer 3 uma a uma</td><td>Decodificação ASN.1 (<code>pycrate</code>) e regras de diagnóstico.</td><td>DT</td></tr>
+  <tr><td>Instalar Python em cada máquina</td><td>Executável único com PyInstaller.</td><td>D-1, SmartEvents, DT</td></tr>
+</table></div>
+
+<p>Três regras aparecem em todas elas:</p>
+<ul class="sum">
+  <li><b>Validar antes de gravar.</b> O dado ruim é recusado inteiro. Nada fica pela metade.</li>
+  <li><b>Parar antes de publicar.</b> O e-mail vira rascunho. Uma pessoa revisa e envia.</li>
+  <li><b>Falhar por partes.</b> Uma regional ou tecnologia que falha não derruba as outras.</li>
+</ul>
+
+<h2 id="pecas"><span class="n">10</span>O que aproveitar em cada uma</h2>
+<div class="quad">
+  <div><h3>D-1 · coleta Altaia por célula</h3>Login SSO, ponte de cookies, moldes em JSON para 3G, 4G e 5G, filtros por regional e validação do CSV. Roda sem tela. É o ponto de partida mais limpo para um relatório novo do Altaia.</div>
+  <div><h3>W-1 · coleta por site e comparação</h3>Leitor de cURL do Chrome, janelas móveis com semanas de referência, banda de desvio, mapa municipal por código IBGE e rascunho com tabelas formatadas.</div>
+  <div><h3>SmartEvents · coleta da gerência</h3>Renovação de sessão do MAE, coletor HTTP de KPI e de trace, agendador com intervalo, séries no tempo em SQLite, limites que viram alertas e mapa de setores.</div>
+  <div><h3>MDT · arquivos grandes e mapas</h3>Download SFTP rápido e retomável, motor de mapas com basemap, detecção de áreas-problema e montagem de PPTX com histórico semanal e comparação antes e depois.</div>
+  <div class="full"><h3>DT · análise e relatório</h3>Leitores tolerantes de CSV, XLSX e XLSB, importador de EP, catálogo de KPIs com limites por projeto, tarefas pesadas com barra de progresso, cache de resultados, interface web dentro de janela nativa e geração de PPTX, Excel e PDF.</div>
+</div>
+
+<h3>Combinações possíveis</h3>
+<p class="small">São ideias de encaixe entre peças que já existem. Nenhuma está implementada.</p>
+<ul class="sum">
+  <li><b>Qualquer KPI do Altaia em mapa.</b> Coleta do D-1 ou W-1 com o renderizador de mapa municipal do W-1.</li>
+  <li><b>Relatório pós-evento.</b> O pacote exportado do SmartEvents alimenta os gráficos e o gerador de PPTX do MDT ou da DT.</li>
+  <li><b>Ofensor com contexto.</b> As piores células do D-1 consultadas na gerência com o coletor do SmartEvents, para ver o comportamento no dia.</li>
+  <li><b>Coleta sem ninguém olhando.</b> A coleta sem tela do D-1 com o agendamento usado no MDT.</li>
+  <li><b>Histórico único.</b> D-1 e W-1 já sabem gravar no Banco RF (<code>nucleo-rf</code>). Novas coletas podem cair no mesmo banco.</li>
+</ul>
+
+<h2><span class="n">11</span>Em resumo</h2>
+<ul class="sum">
+  <li><b>Altaia:</b> login com Playwright e três requisições repetidas. Código em D-1 e W-1.</li>
+  <li><b>Gerência (MAE):</b> sessão guardada, token repetido no cabeçalho, consulta em laço. Código no SmartEvents.</li>
+  <li><b>Arquivos grandes:</b> SFTP paralelo no MDT, leitores e cache na DT.</li>
+  <li><b>Mapas, gráficos e PPTX:</b> motores do MDT e da DT, sem depender de QGIS.</li>
+  <li><b>Entrega:</b> rascunho no Outlook, nunca envio automático.</li>
+</ul>
+
+<details><summary>Quero um relatório novo do Altaia. Por onde começo?</summary>
+  <p>Gere o relatório uma vez no navegador com a aba Rede aberta e copie as três requisições. Compare com um molde existente para achar os campos que mudam. O resto do módulo de coleta do D-1 serve como está.</p></details>
+<details><summary>Quero acompanhar um contador da gerência de hora em hora. O que uso?</summary>
+  <p>A sessão e o coletor HTTP do SmartEvents. Crie a task de monitoramento na gerência, aponte o coletor para ela e ajuste o intervalo do agendador.</p></details>
+<details><summary>Tenho um CSV com latitude, longitude e uma medida. Como vira mapa e slide?</summary>
+  <p>O motor de mapas do MDT pinta os pontos e encontra as áreas-problema. O montador de PPTX encaixa as imagens num modelo.</p></details>
+</main>
+
+<footer>
+  Levantado a partir do código e dos READMEs em <code>Desktop/Projetos</code>, em 12/11/2026. Tempos e nomes de arquivos vêm da documentação de cada projeto.
+</footer>
+
+<script>
+(() => {
+const NS = 'http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- tema ---------- */
+const root = document.documentElement, btn = $('theme');
+const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+const label = () => btn.textContent = isDark() ? 'tema claro' : 'tema escuro';
+try { const t = localStorage.getItem('rf-theme'); if (t) root.dataset.theme = t; } catch (e) {}
+label();
+btn.addEventListener('click', () => {
+  root.dataset.theme = isDark() ? 'light' : 'dark';
+  try { localStorage.setItem('rf-theme', root.dataset.theme); } catch (e) {}
+  label();
+});
+
+/* ---------- progresso de leitura ---------- */
+const prog = $('progress');
+const onScroll = () => { const h = document.documentElement; prog.style.width = (100 * h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight)) + '%'; };
+addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+/* ---------- traço de caneta ---------- */
+let seed = 11;
+const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+const j = a => (rnd() - .5) * 2 * a;
+const f = n => n.toFixed(1);
+function path(g, d, cls = 's', delay) {
+  const p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', d); p.setAttribute('class', cls);
+  if (delay != null) { p.style.setProperty('--d', delay + 's'); if (cls.includes('draw')) p.setAttribute('pathLength', '1'); }
+  g.appendChild(p); return p;
+}
+const stroke = (x1, y1, x2, y2, w = 1.4) =>
+  `M${f(x1 + j(w))} ${f(y1 + j(w))} Q${f((x1 + x2) / 2 + j(w * 1.5))} ${f((y1 + y2) / 2 + j(w * 1.5))} ${f(x2 + j(w))} ${f(y2 + j(w))}`;
+/* cada linha é riscada duas vezes, como quem reforça o traço */
+function line(g, x1, y1, x2, y2, o = {}) {
+  const anim = o.dash ? ' fade dash' : ' draw';
+  const cls = 's ' + (o.cls || '') + (o.delay != null ? anim : (o.dash ? ' dash' : ''));
+  path(g, stroke(x1, y1, x2, y2, o.w), cls, o.delay);
+  if (!o.single && !o.dash) path(g, stroke(x1, y1, x2, y2, o.w), cls, o.delay != null ? o.delay + .08 : null);
+}
+function box(g, x, y, w, h, o = {}) {
+  line(g, x, y, x + w, y, o); line(g, x + w, y, x + w, y + h, o);
+  line(g, x + w, y + h, x, y + h, o); line(g, x, y + h, x, y, o);
+}
+function hatch(x, y, w, h, gap) {
+  let d = '';
+  for (let c = gap; c < w + h; c += gap) {
+    const xa = Math.min(c, w), ya = c - xa, yb = Math.min(c, h), xb = c - yb;
+    d += `M${f(x + xa + j(.5))} ${f(y + ya + j(.5))}L${f(x + xb + j(.5))} ${f(y + yb + j(.5))}`;
+  }
+  return d;
+}
+if (!reduce) { let s = 1; setInterval(() => $('turb').setAttribute('seed', s = s % 6 + 1), 190); }
+
+/* ---------- diagramas ---------- */
+const LH = 23;
+function canvas(id, w, h) {
+  const svg = $(id); svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+  const g = document.createElementNS(NS, 'g'); g.setAttribute('filter', 'url(#boil)'); svg.appendChild(g);
+  return { svg, g };
+}
+/* kind: src = fonte externa · man = passo manual · out = entrega */
+function node(c, x, y, w, h, lines, kind, delay) {
+  if (kind === 'man') box(c.g, x, y, w, h, { delay, dash: true, w: .8 });
+  else box(c.g, x, y, w, h, { delay, cls: kind === 'out' ? 'bold' : '', w: 1.1 });
+  let cx = x + w / 2;
+  if (kind === 'src') {
+    path(c.g, hatch(x + 2, y + 2, 13, h - 4, 4), 's thin fade', delay + .2);
+    line(c.g, x + 17, y, x + 17, y + h, { delay, single: true, cls: 'thin', w: .6 });
+    cx += 8;
+  }
+  const y0 = y + h / 2 - (lines.length - 1) * LH / 2 + 7;
+  lines.forEach((t, i) => {
+    const e = document.createElementNS(NS, 'text');
+    e.setAttribute('x', f(cx)); e.setAttribute('y', f(y0 + i * LH)); e.setAttribute('text-anchor', 'middle');
+    e.setAttribute('class', 'fade' + (i === 0 ? ' t1' : '')); e.style.setProperty('--d', (delay + .15) + 's');
+    e.textContent = t; c.svg.appendChild(e);
+  });
+}
+function arrow(c, x1, y1, x2, y2, delay) {
+  let ang;
+  if (Math.abs(x1 - x2) > 1 && Math.abs(y1 - y2) > 1) {
+    const mx = (x1 + x2) / 2;
+    path(c.g, `M${f(x1)} ${f(y1)} C${f(mx + j(5))} ${f(y1 + j(3))} ${f(mx + j(5))} ${f(y2 + j(3))} ${f(x2)} ${f(y2)}`, 's draw', delay);
+    ang = x2 > x1 ? 0 : Math.PI;
+  } else {
+    path(c.g, stroke(x1, y1, x2, y2, .8), 's draw', delay);
+    ang = Math.atan2(y2 - y1, x2 - x1);
+  }
+  const hx = a => f(x2 - 11 * Math.cos(ang + a)), hy = a => f(y2 - 11 * Math.sin(ang + a));
+  path(c.g, `M${f(x2)} ${f(y2)}L${hx(.45)} ${hy(.45)}M${f(x2)} ${f(y2)}L${hx(-.45)} ${hy(-.45)}`, 's draw', delay + .25);
+}
+function ink(figId) {
+  const fig = $(figId);
+  new IntersectionObserver((es, ob) => es.forEach(e => { if (e.isIntersecting) { fig.classList.add('inked'); ob.disconnect(); } }), { threshold: .2 }).observe(fig);
+}
+/* cadeia em zigue-zague: a 2ª fileira volta da direita para a esquerda */
+function chain(id, figId, steps, s0) {
+  seed = s0;
+  const W = 900, PER = 4, BW = 196, GAP = (W - 8 - PER * BW) / (PER - 1), X0 = 4, Y0 = 6, RG = 46;
+  const BH = 22 + Math.max(...steps.map(s => s.t.length)) * LH;
+  const rows = Math.ceil(steps.length / PER);
+  const c = canvas(id, W, Y0 * 2 + rows * BH + (rows - 1) * RG);
+  const pos = steps.map((s, i) => {
+    const r = Math.floor(i / PER), k = i % PER, col = r % 2 ? PER - 1 - k : k;
+    return { x: X0 + col * (BW + GAP), y: Y0 + r * (BH + RG), r };
+  });
+  steps.forEach((s, i) => {
+    const p = pos[i], d = i * .22;
+    node(c, p.x, p.y, BW, BH, s.t, s.k, d);
+    if (i + 1 < steps.length) {
+      const q = pos[i + 1], m = 5;
+      if (q.r !== p.r) arrow(c, p.x + BW / 2, p.y + BH + m, q.x + BW / 2, q.y - m, d + .15);
+      else if (q.x > p.x) arrow(c, p.x + BW + m, p.y + BH / 2, q.x - m, q.y + BH / 2, d + .15);
+      else arrow(c, p.x - m, p.y + BH / 2, q.x + BW + m, q.y + BH / 2, d + .15);
+    }
+  });
+  ink(figId);
+}
+
+/* ---------- figura 1: mapa geral ---------- */
+(() => {
+  seed = 7;
+  const c = canvas('svg-mapa', 900, 452);
+  const S = { x: 4, w: 196 }, T = { x: 352, w: 196 }, O = { x: 690, w: 206 };
+  const src = [['Altaia', 'contadores por dia'], ['MAE · gerência', 'tempo quase real'], ['SFTP da gerência', 'coletas MDT'], ['arquivos de campo', 'NEMO ou PHU']];
+  const sy = [34, 150, 256, 362], H2 = 68;
+  const tools = [['D-1'], ['W-1'], ['SmartEvents'], ['MDT'], ['DT']];
+  const ty = [8, 82, 162, 268, 374], HT = 44;
+  const outs = [['e-mails prontos:', 'ofensores e desvios'], ['painel ao vivo', 'e alertas'], ['mapas e PPTX', 'de áreas-problema'], ['PPTX, Excel e PDF', 'do drive test']];
+  const oy = [34, 150, 256, 362];
+  src.forEach((t, i) => node(c, S.x, sy[i], S.w, H2, t, 'src', i * .15));
+  tools.forEach((t, i) => node(c, T.x, ty[i], T.w, HT, t, '', .7 + i * .12));
+  outs.forEach((t, i) => node(c, O.x, oy[i], O.w, H2, t, 'out', 1.5 + i * .15));
+  const mid = (y, h) => y + h / 2, m = 6;
+  [[0, 0], [0, 1], [1, 2], [2, 3], [3, 4]].forEach(([a, b], i) =>
+    arrow(c, S.x + S.w + m, mid(sy[a], H2), T.x - m, mid(ty[b], HT), .9 + i * .12));
+  [[0, 0], [1, 0], [2, 1], [3, 2], [4, 3]].forEach(([a, b], i) =>
+    arrow(c, T.x + T.w + m, mid(ty[a], HT), O.x - m, mid(oy[b], H2), 1.6 + i * .12));
+  ink('fig-mapa');
+})();
+
+/* ---------- figuras 7 e 8: computador, servidor e script ---------- */
+function txt(c, x, y, s, delay, anchor = 'middle', cls = '') {
+  const e = document.createElementNS(NS, 'text');
+  e.setAttribute('x', x); e.setAttribute('y', y); e.setAttribute('text-anchor', anchor);
+  e.setAttribute('class', 'fade ' + cls); e.style.setProperty('--d', delay + 's');
+  e.textContent = s; c.svg.appendChild(e);
+}
+function computer(c, x, y, d) {          /* 140 × 112 */
+  box(c.g, x, y, 140, 92, { delay: d, w: 1.1 });
+  box(c.g, x + 9, y + 9, 122, 74, { delay: d + .1, w: .6, single: true, cls: 'thin' });
+  [[20, 26, 78], [20, 42, 104], [20, 58, 62]].forEach(([a, b, e]) => line(c.g, x + a, y + b, x + e, y + b, { delay: d + .3, single: true, cls: 'thin', w: .5 }));
+  line(c.g, x + 70, y + 92, x + 70, y + 108, { delay: d + .2 });
+  line(c.g, x + 38, y + 110, x + 102, y + 110, { delay: d + .2 });
+}
+function server(c, x, y, w, h, n, d) {
+  box(c.g, x, y, w, h, { delay: d, w: 1.1 });
+  const sh = (h - 16) / n;
+  for (let i = 0; i < n; i++) {
+    const sy = y + 12 + i * sh, cy = sy + (sh - 8) / 2;
+    box(c.g, x + 10, sy, w - 20, sh - 8, { delay: d + .15 + i * .06, w: .6, single: true, cls: 'thin' });
+    path(c.g, `M${f(x + 20)} ${f(cy)}a3 3 0 1 0 6 0a3 3 0 1 0 -6 0`, 's thin fade', d + .4);
+    line(c.g, x + 38, cy, x + w - 22, cy, { delay: d + .3, single: true, cls: 'thin', w: .5 });
+  }
+}
+function sheet(c, x, y, d) {             /* 84 × 104, canto dobrado */
+  const o = { delay: d, w: .9 };
+  line(c.g, x, y, x + 62, y, o); line(c.g, x + 62, y, x + 84, y + 22, o);
+  line(c.g, x + 84, y + 22, x + 84, y + 104, o); line(c.g, x + 84, y + 104, x, y + 104, o); line(c.g, x, y + 104, x, y, o);
+  line(c.g, x + 62, y, x + 62, y + 22, { delay: d + .1, single: true, cls: 'thin', w: .5 });
+  line(c.g, x + 62, y + 22, x + 84, y + 22, { delay: d + .1, single: true, cls: 'thin', w: .5 });
+  [[12, 36, 50], [22, 50, 66], [22, 64, 56], [12, 78, 44], [22, 92, 70]].forEach(([a, b, e]) => line(c.g, x + a, y + b, x + e, y + b, { delay: d + .3, single: true, cls: 'thin', w: .5 }));
+}
+/* envelope que viaja pela seta */
+function mail(c, d, begin) {
+  if (reduce) return;
+  const g = document.createElementNS(NS, 'g');
+  path(g, 'M-12 -8h24v16h-24zM-12 -8l12 9l12 -9', 's paper');
+  const a = document.createElementNS(NS, 'animateMotion');
+  a.setAttribute('dur', '3.4s'); a.setAttribute('repeatCount', 'indefinite');
+  a.setAttribute('begin', begin); a.setAttribute('path', d);
+  g.appendChild(a); c.svg.appendChild(g);
+}
+(() => {
+  seed = 91;
+  const c = canvas('svg-conv', 900, 300);
+  computer(c, 60, 86, 0);
+  server(c, 730, 50, 104, 190, 4, .3);
+  arrow(c, 222, 112, 712, 112, .9);
+  arrow(c, 712, 178, 222, 178, 1.5);
+  txt(c, 467, 92, 'pedido: «quero o relatório de ontem, em CSV»', 1.0);
+  txt(c, 467, 208, 'resposta: a página ou o arquivo', 1.6);
+  txt(c, 130, 226, 'seu computador', .5, 'middle', 't1');
+  txt(c, 130, 250, 'navegador', .5);
+  txt(c, 782, 268, 'servidor', .7, 'middle', 't1');
+  txt(c, 782, 292, 'Altaia ou gerência', .7);
+  mail(c, 'M236 112H698', '0s'); mail(c, 'M698 178H236', '-1.7s');
+  ink('fig-conv');
+})();
+(() => {
+  seed = 97;
+  const c = canvas('svg-meio', 900, 400);
+  computer(c, 60, 24, 0);
+  sheet(c, 88, 238, 1.9);
+  server(c, 730, 20, 104, 330, 6, .3);
+  arrow(c, 222, 52, 712, 52, .8);
+  arrow(c, 712, 96, 222, 96, 1.2);
+  arrow(c, 130, 150, 130, 228, 1.7);
+  arrow(c, 192, 270, 712, 270, 2.3);
+  arrow(c, 712, 314, 192, 314, 2.7);
+  txt(c, 467, 36, '1 · o navegador faz o login', .9);
+  txt(c, 467, 124, '2 · o servidor devolve o crachá (cookie)', 1.3);
+  txt(c, 146, 184, '3 · o crachá passa', 1.8, 'start');
+  txt(c, 146, 207, 'para o script', 1.8, 'start');
+  txt(c, 452, 254, '4 · os mesmos pedidos, sem abrir a tela', 2.4);
+  txt(c, 452, 342, '5 · o CSV chega direto', 2.8);
+  txt(c, 130, 372, 'script', 2.0, 'middle', 't1');
+  txt(c, 130, 394, 'é aqui que a gente entra', 2.0);
+  txt(c, 782, 376, 'servidor', .6, 'middle', 't1');
+  mail(c, 'M206 270H698', '0s'); mail(c, 'M698 314H206', '-1.7s');
+  ink('fig-meio');
+})();
+
+/* ---------- figuras 2 a 6 e 9 ---------- */
+chain('svg-d1', 'fig-d1', [
+  { t: ['Altaia', 'por dia e por célula', '3G, 4G e 5G'], k: 'src' },
+  { t: ['login SSO', 'com Playwright'] },
+  { t: ['3 requisições', 'por regional', 'e tecnologia'] },
+  { t: ['CSV validado', 'colunas, data, região'] },
+  { t: ['normaliza', 'LTE · NR · OFFLOAD'] },
+  { t: ['consolida', 'os ofensores', 'pandas ou Power Query'] },
+  { t: ['Banco RF', 'opcional, via nucleo-rf'] },
+  { t: ['rascunhos', 'no Outlook', '3G e consolidado'], k: 'out' },
+], 21);
+
+chain('svg-w1', 'fig-w1', [
+  { t: ['Altaia', 'por dia e por site', '4G e 5G'], k: 'src' },
+  { t: ['login SSO e', '3 requisições', 'por regional'] },
+  { t: ['valida os 2 CSVs', 'antes de gravar'] },
+  { t: ['importa no .xlsm', 'xlwings + macro VBA'] },
+  { t: ['define o período', '7 dias contra', 'semanas de referência'] },
+  { t: ['calcula', 'variação e pontuação', 'por município'] },
+  { t: ['prévia e anexo', 'HTML, XLSX e', 'mapa municipal'] },
+  { t: ['rascunho', 'no Outlook', 'um por regional'], k: 'out' },
+], 33);
+
+chain('svg-se', 'fig-se', [
+  { t: ['MAE · gerência', 'desempenho e trace'], k: 'src' },
+  { t: ['sessão', 'cookies + token', 'renovada sozinha'] },
+  { t: ['coletor HTTP', 'KPI a cada 120 s', 'VIP a cada 60 s'] },
+  { t: ['SQLite', 'um banco por evento'] },
+  { t: ['limites', 'viram alertas'] },
+  { t: ['ponte', 'Python ↔ JavaScript', 'pywebview'] },
+  { t: ['painel', 'mapa, KPIs,', 'VIPs e alertas'], k: 'out' },
+  { t: ['exportação', 'pacote ZIP do evento'] },
+], 45);
+
+chain('svg-mdt', 'fig-mdt', [
+  { t: ['lista de sites', 'da EP, por cluster', 'ou área avulsa'] },
+  { t: ['task no iMaster', 'criada à mão'], k: 'man' },
+  { t: ['SFTP da gerência', 'vários servidores'], k: 'src' },
+  { t: ['download', 'paralelo, com retomada', 'pode ser agendado'] },
+  { t: ['Genex', 'processa a coleta', 'à mão'], k: 'man' },
+  { t: ['extrai o report', 'CQI e throughput', 'por cluster e semana'] },
+  { t: ['mapas', 'e áreas-problema'] },
+  { t: ['apresentação', 'PPTX com histórico'], k: 'out' },
+], 57);
+
+chain('svg-dt', 'fig-dt', [
+  { t: ['pasta da rota', 'NEMO ou PHU', '+ base de células'], k: 'src' },
+  { t: ['inventário', 'classifica e valida', 'cada arquivo'] },
+  { t: ['normaliza', 'colunas, tempo e GPS'] },
+  { t: ['analisa', 'eventos, Layer 3,', 'scanner e KPIs'] },
+  { t: ['áreas-problema', 'e células ofensoras'] },
+  { t: ['cache', 'Parquet e SQLite'] },
+  { t: ['interface', 'mapa, tabelas', 'e detalhe do evento'] },
+  { t: ['relatórios', 'PPTX, Excel e PDF'], k: 'out' },
+], 69);
+
+chain('svg-req', 'fig-req', [
+  { t: ['1 · gravar', 'F12 › Rede, gerar', 'o relatório na tela'], k: 'man' },
+  { t: ['2 · copiar', 'como cURL ou HAR'], k: 'man' },
+  { t: ['3 · separar', 'o fixo do que muda'], k: 'man' },
+  { t: ['4 · molde', 'endereço e campos,', 'sem cookies'], k: 'man' },
+  { t: ['5 · entrar', 'Playwright faz o login'] },
+  { t: ['6 · trocar de mão', 'cookies vão para', 'requests.Session'] },
+  { t: ['7 · repetir', 'a sequência com', 'as variáveis novas'] },
+  { t: ['8 · conferir', 'arquivo validado'], k: 'out' },
+], 81);
+})();
+</script>
+</body>
+</html>

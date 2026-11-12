@@ -1,6 +1,6 @@
 # rf_guide
 
-Material de treinamento no formato de um livro, publicado como página web. Começa com conteúdo de RF (radiofrequência) e vai expandir para outros assuntos. Stack: Astro + MDX + TypeScript, com npm.
+Motor de uma biblioteca pessoal de estudo e treinamento: livros com capítulos e um blog, publicados como página web e exportáveis em HTML de arquivo único e PDF. Começa com conteúdo de RF (radiofrequência) e vai expandir para outros assuntos. Stack: Astro + MDX + TypeScript, com npm.
 
 ## Comandos
 
@@ -16,6 +16,11 @@ O `package.json` ainda não existe; ao criá-lo, mantenha estes scripts:
 - RF é só o primeiro assunto: a estrutura de conteúdo e de navegação precisa aceitar outros assuntos sem retrabalho.
 - Visual minimalista. Tema claro: branco com azul escuro. Tema escuro: preto com branco. Todo componente funciona nos dois temas.
 - Ilustrações animadas e simulações têm aparência de desenho à caneta Bic. Não mude essa identidade visual nem as cores dos temas sem pedido explícito.
+- A página usa só duas cores. Dentro de figuras existe uma paleta fixa (vermelha, verde e âmbar, em `src/estilos/tokens.css`), sempre acompanhada de traço ou rótulo próprio. Nenhum outro arquivo escreve cor.
+- Toda figura é um arquivo `figuras/<nome>.js` desenhado pela API de `src/caneta/caneta.js`. Nada de SVG à mão.
+- O conteúdo fica em `conteudo/exemplo` (versionado aqui), `conteudo/publico` e `conteudo/privado` (repositórios à parte, ignorados pelo git deste). Arquivos de conteúdo não têm `import`. Material do trabalho vai em `privado`.
+- O leitor vê como cada página foi feita: o texto do autor é commitado antes de a IA tocar nele, e commit com IA leva o trailer `Co-Authored-By`.
+- Skills do projeto em `.claude/skills/`: `ilustracao-caneta`, `simulacao-caneta`, `pagina-de-estudo`, `revisao-editorial` e `flashcards`. Use a skill em vez de improvisar o formato.
 - Commits: Conventional Commits em português (`feat: adiciona capítulo de antenas`). Branches: `tipo/descricao`.
 - Desenvolvimento em Windows 11: o Bash do Git for Windows falha nesta máquina; rode os comandos no PowerShell.
 

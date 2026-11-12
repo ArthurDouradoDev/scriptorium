@@ -1,0 +1,134 @@
+/* Estilos das figuras à caneta. Depende de src/estilos/tokens.css.
+   Tudo fica sob .caneta, a classe que montar() põe no elemento da figura. */
+
+.caneta { color: var(--ink); margin-left: 0; margin-right: 0; }
+.caneta svg { display: block; width: 100%; height: auto; overflow: visible; }
+
+/* ---------- traço ---------- */
+.caneta svg .t {
+  fill: none;
+  stroke: var(--c, var(--ink));
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.caneta svg .fino { stroke-width: 1; }
+.caneta svg .forte { stroke-width: 2.2; }
+.caneta svg .tracejado { stroke-dasharray: 2 7; }
+.caneta svg .papel { fill: var(--bg); }
+.caneta svg text {
+  font-family: var(--hand);
+  font-size: 22px;
+  fill: var(--c, var(--ink));
+}
+.caneta svg text.forte { font-weight: 700; }
+.caneta svg text.pequeno { font-size: 18px; }
+.caneta svg text.grande { font-size: 28px; }
+
+/* ---------- paleta: só dentro de figuras ---------- */
+.caneta .cor-vermelha { --c: var(--caneta-vermelha); }
+.caneta .cor-verde { --c: var(--caneta-verde); }
+.caneta .cor-ambar { --c: var(--caneta-ambar); }
+.caneta .cor-apagada { --c: var(--muted); }
+
+/* ---------- desenho progressivo ---------- */
+.caneta .riscar { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.caneta .surgir { opacity: 0; }
+.caneta.tinta .riscar { animation: caneta-riscar .55s ease forwards; animation-delay: var(--d, 0s); }
+.caneta.tinta .surgir { animation: caneta-surgir .5s ease forwards; animation-delay: var(--d, 0s); }
+@keyframes caneta-riscar { to { stroke-dashoffset: 0; } }
+@keyframes caneta-surgir { to { opacity: 1; } }
+
+/* ---------- simulação ---------- */
+.caneta-sim {
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
+  padding: 18px 18px 22px;
+}
+.caneta .sim-titulo { font-family: var(--hand); font-size: 26px; line-height: 1.1; margin: 0 0 4px; }
+.caneta .controles { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 28px; margin-top: 10px; }
+.caneta .controles label { display: block; font-size: 16px; }
+.caneta .controles output { float: right; font-variant-numeric: tabular-nums; color: var(--muted); }
+.caneta input[type=range] {
+  -webkit-appearance: none; appearance: none;
+  width: 100%; height: 24px; background: none; margin: 2px 0 0; cursor: pointer;
+}
+.caneta input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--ink); border-radius: 2px; }
+.caneta input[type=range]::-moz-range-track { height: 2px; background: var(--ink); border-radius: 2px; }
+.caneta input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--bg); border: 2px solid var(--ink); margin-top: -8px;
+}
+.caneta input[type=range]::-moz-range-thumb {
+  width: 15px; height: 15px; border-radius: 50%; background: var(--bg); border: 2px solid var(--ink);
+}
+.caneta input[type=range]:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; border-radius: 4px; }
+
+.caneta .opcoes { display: flex; flex-wrap: wrap; gap: 6px 8px; margin-top: 6px; }
+.caneta .opcoes button {
+  font: inherit; font-family: var(--hand); font-size: 20px; line-height: 1;
+  color: var(--ink); background: none; border: 1.5px solid var(--ink);
+  border-radius: 999px; padding: 4px 13px 6px; cursor: pointer;
+}
+.caneta .opcoes button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.caneta .opcoes button:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.caneta .leituras { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 18px 0 6px; }
+.caneta .leitura .rot { font-size: 15px; color: var(--muted); }
+.caneta .leitura .val {
+  font-size: 34px; line-height: 1.1; font-weight: 600;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+}
+.caneta .leitura .val small { font-size: 16px; font-weight: 400; color: var(--muted); }
+.caneta .leitura .cls { font-family: var(--hand); font-size: 22px; line-height: 1.1; min-height: 24px; }
+.caneta .medidor { position: relative; height: 2px; background: var(--rule); margin: 10px 0 4px; }
+.caneta .medidor i { position: absolute; top: -6px; width: 2px; height: 14px; background: var(--ink); transition: left .15s; }
+.caneta .pontas {
+  display: flex; justify-content: space-between;
+  font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums;
+}
+.caneta .veredito { font-family: var(--hand); font-size: 25px; line-height: 1.2; margin: 14px 0 0; min-height: 60px; }
+
+.caneta .legenda { display: flex; flex-wrap: wrap; gap: 6px 20px; font-size: 14.5px; color: var(--muted); margin-top: 4px; }
+.caneta .legenda span { white-space: nowrap; }
+.caneta .legenda b { color: var(--ink); font-weight: 600; }
+.caneta .amostra {
+  display: inline-block; width: 18px; height: 12px;
+  border: 1.2px solid var(--c, var(--ink)); vertical-align: -1px; margin-right: 6px;
+}
+.caneta .amostra.densa { background: repeating-linear-gradient(135deg, var(--c, var(--ink)) 0 1.6px, transparent 1.6px 3px); }
+.caneta .amostra.leve { background: repeating-linear-gradient(135deg, var(--c, var(--ink)) 0 1px, transparent 1px 5px); }
+.caneta .amostra.cruzada {
+  background:
+    repeating-linear-gradient(135deg, var(--c, var(--ink)) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(45deg, var(--c, var(--ink)) 0 1px, transparent 1px 5px);
+}
+.caneta .amostra.linha { height: 0; border-width: 1.6px 0 0; vertical-align: 4px; }
+.caneta .amostra.linha.tracejada { border-top-style: dashed; }
+
+/* Figura estreita (celular ou coluna apertada): o SVG encolhe, então o texto
+   cresce para continuar legível, e as grades viram uma coluna. A medida é a
+   largura da própria figura, não a da janela. */
+.caneta { container-type: inline-size; }
+@container (max-width: 560px) {
+  .caneta svg text { font-size: 28px; }
+  .caneta svg text.pequeno { font-size: 23px; }
+  .caneta .controles, .caneta .leituras { grid-template-columns: 1fr; }
+}
+
+/* ---------- sem movimento e impresso: tudo visível e parado ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .caneta .riscar { stroke-dashoffset: 0; }
+  .caneta .surgir { opacity: 1; }
+  .caneta.tinta .riscar, .caneta.tinta .surgir { animation: none; }
+}
+.caneta[data-estado="impresso"] .riscar { stroke-dashoffset: 0; animation: none; }
+.caneta[data-estado="impresso"] .surgir { opacity: 1; animation: none; }
+.caneta[data-estado="impresso"] .controles,
+.caneta[data-estado="impresso"] .opcoes { display: none; }
+@media print {
+  .caneta .riscar { stroke-dashoffset: 0; animation: none; }
+  .caneta .surgir { opacity: 1; animation: none; }
+  .caneta .controles, .caneta .opcoes { display: none; }
+  .caneta-sim { break-inside: avoid; }
+}
