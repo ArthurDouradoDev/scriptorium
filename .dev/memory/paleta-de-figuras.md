@@ -31,4 +31,4 @@ Na API do kit elas são `cor: 'vermelha' | 'verde' | 'ambar'`. Nenhum arquivo de
 ## Limites
 
 - Dado contínuo (mapa de calor) não usa a paleta: entra como imagem original com moldura.
-- Os valores em `tokens.css` são provisórios até a validação visual da fase f1 do plano `v1-motor` (contraste mínimo de 4,5:1 com o fundo nos dois temas e distinção em simulação de daltonismo).
+- Os valores em `tokens.css` foram fechados na fase f1 do plano `v1-motor` com dois critérios, nos dois temas: contraste de pelo menos 4,5:1 com o fundo e, em simulação de protanopia, deuteranopia e tritanopia (matrizes de Machado 2009), menor ΔE entre quaisquer duas cores (tinta incluída) acima de 20. Os valores provisórios falhavam: vermelho e âmbar ficavam com ΔE 7 em deuteranopia no tema claro. Mudou um valor, refaça as duas contas; `/estilo` mostra o contraste ao vivo.

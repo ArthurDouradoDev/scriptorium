@@ -1,3 +1,7 @@
 .dev/.local/
 .dev/memory/index.md
 .dev/errors/index.md
+
+node_modules/
+dist/
+.astro/

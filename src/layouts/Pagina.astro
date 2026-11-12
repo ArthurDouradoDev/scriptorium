@@ -1,0 +1,177 @@
+---
+/* Layout de toda página: barra do topo com trilha, botão de tema e barra de
+   progresso; cabeçalho com chamada manuscrita, título e subtítulo; rodapé.
+   Extraído de prototipos/aula-rsrp-rsrq.html. */
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource-variable/newsreader/opsz-italic.css';
+import '@fontsource/caveat/500.css';
+import '@fontsource/caveat/700.css';
+import '../estilos/tokens.css';
+import '../estilos/base.css';
+
+export interface ItemTrilha {
+  rotulo: string;
+  href?: string;
+}
+
+interface Props {
+  titulo: string;
+  /** Linha manuscrita acima do título. */
+  chamada?: string;
+  subtitulo?: string;
+  /** Texto do <meta name="description">; padrão: o subtítulo. */
+  descricao?: string;
+  /** Itens da barra do topo, do mais geral ao mais específico. O primeiro sai em negrito. */
+  trilha?: ItemTrilha[];
+}
+
+const { titulo, chamada, subtitulo, descricao = subtitulo, trilha = [{ rotulo: 'Início', href: '/' }] } = Astro.props;
+---
+
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    {descricao && <meta name="description" content={descricao} />}
+    <script is:inline>
+      /* Aplica o tema escolhido antes da primeira pintura, para não piscar. */
+      try {
+        const t = localStorage.getItem('tema');
+        if (t === 'claro' || t === 'escuro') document.documentElement.dataset.theme = t === 'claro' ? 'light' : 'dark';
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div class="barra">
+      <div class="barra-in">
+        <nav class="trilha" aria-label="Trilha de navegação">
+          {
+            trilha.map((item, i) => {
+              const conteudo = i === 0 ? <b>{item.rotulo}</b> : item.rotulo;
+              return (
+                <>
+                  {i > 0 && ' · '}
+                  {item.href ? <a href={item.href}>{conteudo}</a> : <span>{conteudo}</span>}
+                </>
+              );
+            })
+          }
+        </nav>
+        <button id="tema" type="button" aria-label="Alternar tema claro e escuro">
+          <span class="rot-escuro">tema escuro</span><span class="rot-claro">tema claro</span>
+        </button>
+      </div>
+      <div id="progresso"></div>
+    </div>
+
+    <main>
+      <header class="cabecalho">
+        {chamada && <div class="chamada">{chamada}</div>}
+        <h1>{titulo}</h1>
+        {subtitulo && <p class="subtitulo">{subtitulo}</p>}
+      </header>
+      <slot />
+    </main>
+
+    <footer class="rodape">
+      <slot name="rodape" />
+    </footer>
+
+    <script>
+      const raiz = document.documentElement;
+      const escuroNoSistema = matchMedia('(prefers-color-scheme: dark)');
+      const estaEscuro = () => (raiz.dataset.theme ? raiz.dataset.theme === 'dark' : escuroNoSistema.matches);
+
+      document.getElementById('tema')?.addEventListener('click', () => {
+        const escuro = !estaEscuro();
+        raiz.dataset.theme = escuro ? 'dark' : 'light';
+        try {
+          localStorage.setItem('tema', escuro ? 'escuro' : 'claro');
+        } catch (e) {}
+      });
+
+      const barra = document.getElementById('progresso');
+      const aoRolar = () => {
+        const max = raiz.scrollHeight - raiz.clientHeight;
+        if (barra) barra.style.width = (max > 0 ? (100 * raiz.scrollTop) / max : 0) + '%';
+      };
+      addEventListener('scroll', aoRolar, { passive: true });
+      addEventListener('resize', aoRolar, { passive: true });
+      aoRolar();
+    </script>
+  </body>
+</html>
+
+<style>
+  .barra {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+    transition: background 0.3s;
+  }
+  .barra-in {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 15px;
+  }
+  .trilha {
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .trilha a { text-decoration: none; }
+  .trilha a:hover { text-decoration: underline; }
+  .trilha b { color: var(--ink); font-weight: 600; }
+
+  #tema {
+    font: inherit;
+    font-family: var(--hand);
+    font-size: 20px;
+    line-height: 1;
+    color: var(--ink);
+    background: none;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    padding: 5px 14px 7px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  #tema:hover { background: var(--ink); color: var(--bg); }
+
+  /* O rótulo do botão segue o tema pelo CSS, então já nasce certo, sem esperar o script. */
+  .rot-claro { display: none; }
+  :global(:root[data-theme='dark']) .rot-escuro { display: none; }
+  :global(:root[data-theme='dark']) .rot-claro { display: inline; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .rot-escuro { display: none; }
+    :global(:root:not([data-theme='light'])) .rot-claro { display: inline; }
+  }
+
+  #progresso { height: 2px; background: var(--ink); width: 0; }
+
+  .rodape {
+    max-width: 680px;
+    margin: 80px auto 0;
+    padding: 22px 16px 60px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 16px;
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .barra { transition: none; }
+  }
+</style>

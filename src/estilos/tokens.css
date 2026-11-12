@@ -1,33 +1,38 @@
 /* Tokens de cor e de fonte. Fonte única: nenhum outro arquivo escreve cor.
    A página usa só --bg e --ink. As três cores --caneta-* existem apenas
    dentro de figuras (ver .dev/memory/paleta-de-figuras.md).
-   Os valores da paleta são provisórios até a validação visual da fase f1. */
+   Critério da paleta, nos dois temas: contraste de pelo menos 4,5:1 com o fundo e,
+   em simulação de protanopia, deuteranopia e tritanopia, as três cores distintas
+   entre si e da tinta (menor ΔE entre pares acima de 20). */
 
 :root,
 [data-theme="light"] {
+  color-scheme: light;
   --bg: #ffffff;
   --ink: #0f2167;
-  --caneta-vermelha: #b3261e;
-  --caneta-verde: #1b7a43;
-  --caneta-ambar: #955a00;
+  --caneta-vermelha: #931c1a;
+  --caneta-verde: #0e814f;
+  --caneta-ambar: #a95f04;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
+    color-scheme: dark;
     --bg: #000000;
     --ink: #ffffff;
-    --caneta-vermelha: #ff8a7a;
-    --caneta-verde: #62d394;
-    --caneta-ambar: #f5b942;
+    --caneta-vermelha: #fa5842;
+    --caneta-verde: #29e091;
+    --caneta-ambar: #ffb300;
   }
 }
 
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg: #000000;
   --ink: #ffffff;
-  --caneta-vermelha: #ff8a7a;
-  --caneta-verde: #62d394;
-  --caneta-ambar: #f5b942;
+  --caneta-vermelha: #fa5842;
+  --caneta-verde: #29e091;
+  --caneta-ambar: #ffb300;
 }
 
 /* Derivadas: repetidas em [data-theme] para valerem também num trecho

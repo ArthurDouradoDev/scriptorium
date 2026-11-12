@@ -1,0 +1,283 @@
+---
+/* Página de estilo, fora da navegação: elementos de texto, traços, hachuras,
+   a paleta de figuras nos dois temas e a mesma figura de teste em três versões.
+   Serve para comparar com os protótipos e aprovar os valores de tokens.css. */
+import Pagina from '../layouts/Pagina.astro';
+import '../caneta/caneta.css';
+---
+
+<Pagina
+  titulo="Página de estilo"
+  chamada="fora da navegação"
+  subtitulo="Os elementos de texto, o traço da caneta e a paleta de figuras, para conferir nos dois temas."
+  trilha={[{ rotulo: 'Início', href: '/' }, { rotulo: 'Estilo' }]}
+>
+  <p>
+    Esta página reúne tudo o que o layout e as figuras usam. Um <em>parágrafo</em> tem <b>negrito</b>,
+    um <a href="/">link</a> e um trecho de <code>código</code>. A coluna de texto tem 680 px; figuras e
+    simulações podem usar a largura larga, de 900 px.
+  </p>
+
+  <h2><span class="n">1</span>Elementos de texto</h2>
+  <p>
+    Os títulos de seção levam o número manuscrito à esquerda. Nas páginas de conteúdo esse número entra sozinho;
+    aqui ele está escrito à mão.
+  </p>
+
+  <h3>Subtítulo de terceiro nível</h3>
+  <p>Listas seguem o recuo dos protótipos:</p>
+  <ul>
+    <li>um item curto;</li>
+    <li>um item mais longo, que quebra em duas linhas quando a coluna fica estreita, para conferir a entrelinha;</li>
+    <li>um terceiro item.</li>
+  </ul>
+  <ol>
+    <li>primeiro passo;</li>
+    <li>segundo passo.</li>
+  </ol>
+
+  <table>
+    <tr><th>Medida</th><th>Leitura prática</th></tr>
+    <tr><td class="num">acima de −80 dBm</td><td>Excelente. Perto da torre ou com visada livre.</td></tr>
+    <tr><td class="num">−80 a −90 dBm</td><td>Bom.</td></tr>
+    <tr><td class="num">abaixo de −100 dBm</td><td>Fraco. Borda de célula ou ambiente fechado.</td></tr>
+  </table>
+  <p class="pequeno">Texto pequeno, para notas de rodapé de tabela e avisos de modelo simplificado.</p>
+
+  <pre><code>Um bloco de código, para pedidos a uma IA
+com mais de uma linha.</code></pre>
+
+  <h2><span class="n">2</span>Traço da caneta</h2>
+  <p>Três pesos de traço: fino para grades e detalhes, normal para o desenho e forte para o que precisa saltar.</p>
+  <figure>
+    <div class="fig" data-fig="pesos"></div>
+    <figcaption><b>Figura 1.</b> Os três pesos, em linha, caixa, círculo e seta.</figcaption>
+  </figure>
+
+  <p>Quatro hachuras, da mais escura à mais clara, e a cruzada.</p>
+  <figure>
+    <div class="fig" data-fig="hachuras"></div>
+    <figcaption><b>Figura 2.</b> As quatro hachuras do kit.</figcaption>
+  </figure>
+
+  <h2><span class="n">3</span>Paleta de figuras</h2>
+  <p>
+    A página usa só duas cores. Vermelha, verde e âmbar existem só dentro de figuras e sempre com um segundo sinal:
+    traço próprio ou rótulo. Abaixo, as três cores nos dois temas, lado a lado, com o contraste medido contra o fundo
+    (mínimo de 4,5:1).
+  </p>
+  <div class="larga paineis">
+    <div class="painel" data-theme="light">
+      <p class="painel-titulo">tema claro</p>
+      <div class="fig" data-fig="amostras"></div>
+      <table class="contraste"></table>
+    </div>
+    <div class="painel" data-theme="dark">
+      <p class="painel-titulo">tema escuro</p>
+      <div class="fig" data-fig="amostras"></div>
+      <table class="contraste"></table>
+    </div>
+  </div>
+  <p class="pequeno">
+    Para conferir com daltonismo: ferramentas de desenvolvedor do navegador, aba Renderização, opção “Emular
+    deficiências de visão”.
+  </p>
+
+  <h2><span class="n">4</span>Figura de teste</h2>
+  <p>A mesma figura em três versões. Só a terceira cumpre a regra: cor com traço próprio e rótulo direto.</p>
+  <figure class="larga">
+    <div class="fig" data-fig="teste-tinta"></div>
+    <figcaption><b>Figura 3.</b> Só tinta. As séries se separam apenas pelos rótulos.</figcaption>
+  </figure>
+  <figure class="larga">
+    <div class="fig" data-fig="teste-paleta"></div>
+    <figcaption><b>Figura 4.</b> Com a paleta, todas com o mesmo traço.</figcaption>
+  </figure>
+  <figure class="larga">
+    <div class="fig" data-fig="teste-distintos"></div>
+    <figcaption><b>Figura 5.</b> Com a paleta e traços distintos: contínuo, tracejado, forte e fino.</figcaption>
+  </figure>
+</Pagina>
+
+<style>
+  .paineis {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 30px 0;
+  }
+  .painel {
+    background: var(--bg);
+    color: var(--ink);
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 14px 16px 6px;
+  }
+  .painel-titulo {
+    font-family: var(--hand);
+    font-size: 24px;
+    line-height: 1;
+    margin: 0 0 8px;
+  }
+  .painel :global(.contraste) { font-size: 15px; margin: 10px 0; }
+  @media (max-width: 640px) {
+    .paineis { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  import { montar, type Caneta, type Cor, type Figura, type Opcoes } from '../caneta/caneta.js';
+
+  const pesos: Figura = {
+    tipo: 'ilustracao',
+    largura: 680,
+    altura: 200,
+    semente: 3,
+    alt: 'Três linhas, três caixas, três círculos e três setas, cada grupo com um peso de traço: fino, normal e forte.',
+    desenhar(c: Caneta) {
+      const grupos: [string, Opcoes][] = [
+        ['fino', { peso: 'fino' }],
+        ['normal', {}],
+        ['forte', { peso: 'forte' }],
+      ];
+      grupos.forEach(([rotulo, o], i) => {
+        const y = 40 + i * 60;
+        const t = c.depois(0.25);
+        c.texto(10, y + 6, rotulo, { atraso: t });
+        c.linha(100, y, 280, y, { ...o, atraso: t });
+        c.caixa(320, y - 20, 70, 40, { ...o, atraso: t });
+        c.circulo(460, y, 20, { ...o, atraso: t });
+        c.seta(530, y + 14, 660, y - 14, { ...o, curva: 14, atraso: t });
+      });
+    },
+  };
+
+  const hachuras: Figura = {
+    tipo: 'ilustracao',
+    largura: 680,
+    altura: 150,
+    semente: 5,
+    alt: 'Quatro retângulos com hachuras diagonais: densa, normal, leve e cruzada.',
+    desenhar(c: Caneta) {
+      const tipos: [string, Opcoes][] = [
+        ['densa', { espaco: 2.5 }],
+        ['normal', { espaco: 4 }],
+        ['leve', { espaco: 7 }],
+        ['cruzada', { espaco: 5, cruzada: true }],
+      ];
+      tipos.forEach(([rotulo, o], i) => {
+        const x = 10 + i * 170;
+        const t = c.depois(0.2);
+        c.hachura(x + 3, 13, 134, 74, { ...o, atraso: t });
+        c.caixa(x, 10, 140, 80, { atraso: t });
+        c.texto(x + 70, 124, rotulo, { ancora: 'middle', atraso: t });
+      });
+    },
+  };
+
+  const amostras: Figura = {
+    tipo: 'ilustracao',
+    largura: 680,
+    altura: 196,
+    semente: 7,
+    alt: 'Amostras de cada cor da paleta: tinta, vermelha, verde e âmbar, em linha fina, normal, forte e tracejada, em hachura simples e cruzada e em texto.',
+    desenhar(c: Caneta) {
+      const cores: [string, Cor | undefined][] = [
+        ['tinta', undefined],
+        ['vermelha', 'vermelha'],
+        ['verde', 'verde'],
+        ['âmbar', 'ambar'],
+      ];
+      cores.forEach(([rotulo, cor], i) => {
+        const y = 28 + i * 46;
+        c.texto(6, y + 7, rotulo, { cor });
+        c.linha(100, y, 160, y, { cor, peso: 'fino', tremor: 0.8 });
+        c.linha(175, y, 235, y, { cor, tremor: 0.8 });
+        c.linha(250, y, 310, y, { cor, peso: 'forte', tremor: 0.8 });
+        c.linha(325, y, 385, y, { cor, tracejado: true, tremor: 0.8 });
+        c.hachura(405, y - 14, 60, 28, { cor });
+        c.caixa(405, y - 14, 60, 28, { cor, tremor: 0.6 });
+        c.hachura(480, y - 14, 60, 28, { cor, cruzada: true, espaco: 5 });
+        c.caixa(480, y - 14, 60, 28, { cor, tremor: 0.6 });
+        c.texto(560, y + 7, '−86,8 dB', { cor });
+      });
+    },
+  };
+
+  /* Figura de teste: quatro séries num gráfico, com rótulo direto no fim de cada curva. */
+  function figuraDeTeste(modo: 'tinta' | 'paleta' | 'distintos'): Figura {
+    const series: { rotulo: string; cor?: Cor; traco: Opcoes; f: (x: number) => number }[] = [
+      { rotulo: 'sinal', traco: {}, f: (x) => 95 - 5 * x },
+      { rotulo: 'interferência', cor: 'vermelha', traco: { tracejado: true }, f: (x) => 10 + 7 * x },
+      { rotulo: 'pico', cor: 'verde', traco: { peso: 'forte' }, f: (x) => 15 + 55 * Math.exp(-((x - 4) ** 2) / 4) },
+      { rotulo: 'ruído', cor: 'ambar', traco: { peso: 'fino' }, f: (x) => 30 + 2 * Math.sin(3 * x) },
+    ];
+    const nomes = { tinta: 'só tinta', paleta: 'com a paleta', distintos: 'com a paleta e traços distintos' };
+    return {
+      tipo: 'ilustracao',
+      largura: 760,
+      altura: 330,
+      semente: 13,
+      alt: `Gráfico de teste ${nomes[modo]}: quatro curvas chamadas sinal, interferência, pico e ruído.`,
+      desenhar(c: Caneta) {
+        const e = c.eixos({
+          x: 90, y: 30, largura: 500, altura: 220,
+          dominioX: [0, 10], dominioY: [0, 100],
+          marcasX: [0, 5, 10], marcasY: [0, 50, 100],
+          rotuloX: 'tempo', rotuloY: 'nível',
+          atraso: c.depois(0),
+        });
+        series.forEach((s) => {
+          const cor = modo === 'tinta' ? undefined : s.cor;
+          const traco = modo === 'distintos' ? s.traco : {};
+          const t = c.depois(0.3);
+          c.curva(e.amostrar(s.f), { cor, ...traco, atraso: t });
+          c.texto(e.x(10) + 14, e.y(s.f(10)) + 7, s.rotulo, { cor, atraso: t + 0.3 });
+        });
+      },
+    };
+  }
+
+  const figuras: Record<string, Figura> = {
+    pesos,
+    hachuras,
+    amostras,
+    'teste-tinta': figuraDeTeste('tinta'),
+    'teste-paleta': figuraDeTeste('paleta'),
+    'teste-distintos': figuraDeTeste('distintos'),
+  };
+
+  document.querySelectorAll<HTMLElement>('.fig[data-fig]').forEach((alvo) => {
+    const figura = figuras[alvo.dataset.fig ?? ''];
+    if (figura) montar(alvo, figura);
+  });
+
+  /* Contraste WCAG de cada cor com o fundo do painel, lido dos tokens. */
+  const canal = (v: number) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+  const luminancia = (hex: string) => {
+    const [r, g, b] = [1, 3, 5].map((i) => canal(parseInt(hex.slice(i, i + 2), 16) / 255));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  };
+  const contraste = (a: string, b: string) => {
+    const [x, y] = [luminancia(a), luminancia(b)].sort((p, q) => q - p);
+    return (x + 0.05) / (y + 0.05);
+  };
+  document.querySelectorAll<HTMLElement>('.painel').forEach((painel) => {
+    const estilo = getComputedStyle(painel);
+    const ler = (nome: string) => estilo.getPropertyValue(nome).trim();
+    const fundo = ler('--bg');
+    const tabela = painel.querySelector('.contraste');
+    if (!tabela) return;
+    const linhas = [
+      ['tinta', '--ink'],
+      ['vermelha', '--caneta-vermelha'],
+      ['verde', '--caneta-verde'],
+      ['âmbar', '--caneta-ambar'],
+    ].map(([rotulo, nome]) => {
+      const valor = ler(nome);
+      const r = contraste(valor, fundo);
+      return `<tr><td>${rotulo}</td><td><code>${valor}</code></td><td class="num">${r.toFixed(2).replace('.', ',')}:1 ${r >= 4.5 ? '✓' : '✗ abaixo de 4,5'}</td></tr>`;
+    });
+    tabela.innerHTML = '<tr><th>cor</th><th>valor</th><th>contraste</th></tr>' + linhas.join('');
+  });
+</script>
