@@ -100,6 +100,44 @@ const { titulo, chamada, subtitulo, descricao = subtitulo, trilha = [{ rotulo: '
       addEventListener('scroll', aoRolar, { passive: true });
       addEventListener('resize', aoRolar, { passive: true });
       aoRolar();
+
+      /* Adiciona botão de copiar em blocos <pre> avulsos e ativa todos os botões [data-copiar]. */
+      document.querySelectorAll<HTMLPreElement>('main pre').forEach((pre) => {
+        if (pre.closest('[data-codigo]')) return;
+        const bloco = document.createElement('div');
+        bloco.className = 'bloco-codigo';
+        bloco.dataset.codigo = '';
+        const topo = document.createElement('div');
+        topo.className = 'bloco-codigo-topo';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'botao-copiar';
+        btn.dataset.copiar = '';
+        btn.setAttribute('aria-label', 'Copiar código');
+        btn.textContent = 'copiar';
+        topo.appendChild(btn);
+        pre.parentNode?.insertBefore(bloco, pre);
+        bloco.append(topo, pre);
+      });
+
+      document.addEventListener('click', async (ev) => {
+        const alvo = ev.target instanceof Element ? ev.target.closest<HTMLButtonElement>('[data-copiar]') : null;
+        if (!alvo) return;
+        const container = alvo.closest('[data-codigo]');
+        const alvoTexto = container?.querySelector('pre') ?? container;
+        const texto = alvoTexto?.textContent?.trim() ?? '';
+        if (!texto) return;
+        try {
+          await navigator.clipboard.writeText(texto);
+          const original = alvo.textContent;
+          alvo.textContent = 'copiado';
+          setTimeout(() => {
+            alvo.textContent = original;
+          }, 1800);
+        } catch {
+          // Sem permissão de área de transferência.
+        }
+      });
     </script>
   </body>
 </html>

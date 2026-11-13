@@ -1,0 +1,28 @@
+---
+/* Expressão simples em HTML com leitura acessível obrigatória. */
+interface Props {
+  descricao: string;
+}
+
+const { descricao } = Astro.props;
+---
+
+<div class="formula" role="math" aria-label={descricao}>
+  <slot />
+</div>
+
+<style>
+  .formula {
+    font-size: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+  }
+  .formula :global(p) {
+    margin: 0;
+    display: contents;
+  }
+</style>

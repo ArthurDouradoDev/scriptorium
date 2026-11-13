@@ -1,0 +1,39 @@
+---
+/* Item de conferência dentro de <ComoValidar>. */
+interface Props {
+  verificar: string;
+  erro: string;
+}
+
+const { verificar, erro } = Astro.props;
+---
+
+<li class="conferir-item">
+  <p class="conferir-verificar">{verificar}</p>
+  <p class="conferir-erro"><b>Sinal de erro:</b> {erro}</p>
+</li>
+
+<style>
+  .conferir-item {
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 0;
+    margin: 0;
+  }
+  .conferir-item:first-child {
+    padding-top: 0;
+  }
+  .conferir-item:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+  .conferir-verificar {
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .conferir-erro {
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.45;
+    margin: 0;
+  }
+</style>

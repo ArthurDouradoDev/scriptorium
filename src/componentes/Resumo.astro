@@ -1,0 +1,11 @@
+---
+/* Bloco da lista "Em resumo". */
+---
+
+<div class="resumo"><slot /></div>
+
+<style>
+  .resumo :global(ul:last-child) {
+    margin-bottom: 0;
+  }
+</style>

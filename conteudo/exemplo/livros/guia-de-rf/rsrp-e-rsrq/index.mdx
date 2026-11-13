@@ -1,0 +1,171 @@
+---
+titulo: RSRP e RSRQ
+chamada: aula 3
+resumo: Duas medidas que o celular faz o tempo todo. Uma diz quão forte a célula chega. A outra diz quão limpo esse sinal está no meio de todo o resto.
+etapa: aprovado
+tags: [lte, medidas]
+---
+
+Imagine uma festa cheia. Você tenta ouvir um amigo do outro lado da sala. Duas coisas decidem se a conversa funciona: o volume da voz dele quando chega até você, e quanto barulho há em volta.
+
+No LTE, o celular faz essas duas perguntas sobre cada célula que enxerga. O <Termo>RSRP</Termo> responde à primeira: quão forte chega a voz da célula. O <Termo>RSRQ</Termo> responde à segunda: de tudo o que a antena capta, quanto é essa voz. Com os dois números, a rede decide em que célula o celular fica e quando troca de célula.
+
+## O que o celular mede
+
+O LTE divide o sinal em uma grade de tempo e frequência. Cada quadradinho da grade é um <Termo>elemento de recurso</Termo>: uma subportadora de 15 kHz durante um símbolo. Um bloco de 12 subportadoras é um <Termo>bloco de recursos</Termo> (RB).
+
+A maior parte dos quadradinhos leva dados, e o celular não sabe de antemão o que vem neles. Alguns, em posições fixas, levam o <Termo>sinal de referência</Termo>: uma sequência conhecida, enviada sempre com a mesma potência, haja tráfego ou não. É nesses que o celular mede.
+
+<Figura
+  nome="grade-rb"
+  largura="larga"
+  legenda="Um bloco de recursos visto por uma antena. Os quatro quadradinhos hachurados levam o sinal de referência. O RSRP olha só para eles. O RSSI soma a potência das colunas inteiras em que eles aparecem."
+/>
+
+## RSRP: a força da referência
+
+RSRP é a sigla de *Reference Signal Received Power*. É a potência média recebida em **um** elemento de recurso que leva sinal de referência. O valor é dado em dBm e fica entre −140 e −44 dBm.
+
+Como olha só para a referência, o RSRP não muda com a carga da célula nem com a largura de banda. Ele depende do caminho entre a torre e o celular: distância, paredes, relevo, antenas. Por isso é a medida de **cobertura**.
+
+| RSRP | Leitura prática |
+|---|---|
+| acima de −80 dBm | Excelente. Perto da torre ou com visada livre. |
+| −80 a −90 dBm | Bom. |
+| −90 a −100 dBm | Regular. Funciona, com taxas menores. |
+| abaixo de −100 dBm | Fraco. Borda de célula ou ambiente fechado. |
+
+<p class="pequeno">As faixas são regras de bolso usadas em campo. Cada operadora ajusta os próprios limites.</p>
+
+## RSSI: tudo o que chega
+
+O <Termo>RSSI</Termo> (*Received Signal Strength Indicator*) é a potência total que o celular capta na banda medida, nos símbolos que têm sinal de referência. Entra tudo: a referência e os dados da própria célula, o sinal das células vizinhas na mesma frequência e o ruído.
+
+Sozinho, o RSSI engana. Ele sobe quando a célula está cheia e sobe quando há interferência. Um RSSI alto pode ser sinal bom ou barulho alto. Ele serve como o denominador da próxima medida.
+
+## RSRQ: a parte que interessa
+
+RSRQ é a sigla de *Reference Signal Received Quality*. Ele compara o RSRP com o RSSI:
+
+<Formula descricao="RSRQ é igual a N vezes RSRP dividido por RSSI">
+  RSRQ = <Fracao em-cima="N × RSRP" embaixo="RSSI" />
+</Formula>
+
+**N** é o número de blocos de recursos da banda medida. Ele entra porque o RSRP vale para um quadradinho e o RSSI vale para a banda toda. O resultado é dado em dB e fica entre −19,5 e −3 dB. Quanto mais perto de −3, mais limpo.
+
+O valor nunca passa de −3 dB, mesmo sem interferência nenhuma. Com uma antena transmissora, cada bloco tem 2 quadradinhos de referência por símbolo medido. Se a célula está vazia, o RSSI de um bloco vale 2 × RSRP, e a razão dá 1/2, ou −3 dB. Se a célula está cheia, os 12 quadradinhos do símbolo têm potência, a razão cai para 1/12 e o RSRQ vai a −10,8 dB.
+
+<Nota>
+  Uma célula sozinha e lotada já marca −10,8 dB.
+  Abaixo disso, tem mais alguém falando: interferência ou ruído.
+</Nota>
+
+| RSRQ | Leitura prática |
+|---|---|
+| acima de −10 dB | Excelente. Pouca carga e pouca interferência. |
+| −10 a −15 dB | Bom a regular. Célula carregada ou alguma interferência. |
+| abaixo de −15 dB | Ruim. Interferência forte ou sinal perto do ruído. |
+
+## Experimente
+
+O celular abaixo está preso à torre A. A torre B usa a mesma frequência, então tudo o que ela transmite é interferência. Mova o celular, encha as células e ponha paredes no caminho.
+
+<Figura nome="duas-torres" largura="larga" />
+
+<p class="pequeno">Modelo simplificado: perda de propagação urbana em 2 GHz, uma antena transmissora por torre, ruído térmico com 7 dB de figura de ruído. Os números servem para ver as tendências, não para dimensionar uma rede.</p>
+
+Três coisas para tentar:
+
+- Deixe o celular parado e suba só as **paredes**. O RSRP despenca e o RSRQ quase não se mexe, porque A e B caem juntas. Ele só piora quando o sinal chega perto do ruído.
+- Zere as paredes e suba a **carga da torre A**. O RSRP fica igual. O RSRQ cai, sem que nada tenha mudado no caminho do sinal.
+- Leve o celular para **perto da torre B**. O RSRQ desaba, porque a vizinha chega mais forte que a servidora. É a situação que o handover evita.
+
+## Lendo os dois juntos
+
+Nenhum dos dois números conta a história sozinho. O par aponta a causa do problema.
+
+<Quadro>
+  <Caso titulo="RSRP bom · RSRQ bom">Cobertura boa e canal limpo. É o cenário de taxas altas.</Caso>
+  <Caso titulo="RSRP bom · RSRQ ruim">O sinal chega forte, mas sujo. Procure interferência de vizinhas ou célula sobrecarregada.</Caso>
+  <Caso titulo="RSRP ruim · RSRQ bom">Sinal fraco, sem concorrência. Típico de área rural ou de ambiente fechado. É problema de cobertura.</Caso>
+  <Caso titulo="RSRP ruim · RSRQ ruim">Borda de célula com vizinhas na mesma intensidade, ou sinal no nível do ruído. Quedas e taxas baixas.</Caso>
+</Quadro>
+
+## Em resumo
+
+<Resumo>
+  - **RSRP** mede a potência de um elemento de referência, em dBm. Indica cobertura e não depende da carga.
+  - **RSSI** mede tudo o que chega na banda: célula servidora, vizinhas e ruído.
+  - **RSRQ** = N × RSRP / RSSI, em dB. Indica quanto do que chega é a célula medida. Cai com carga, interferência e ruído.
+  - Sem interferência, o RSRQ fica entre −3 dB (célula vazia) e −10,8 dB (célula cheia).
+  - No 5G as medidas equivalentes são o SS-RSRP e o SS-RSRQ, feitas sobre o bloco de sincronismo (SSB).
+</Resumo>
+
+## Confira se entendeu
+
+<Confira>
+  <Pergunta texto="Um celular marca RSRP de −75 dBm e RSRQ de −17 dB. O que está acontecendo?">
+    O sinal chega forte, então cobertura não é o problema. O RSRQ baixo indica muita potência que não é da referência: interferência de células vizinhas na mesma frequência, provavelmente somada a carga alta.
+  </Pergunta>
+  <Pergunta texto="A banda da célula passa de 10 para 20 MHz. O RSRP muda? E o RSRQ?">
+    Nenhum dos dois muda por causa disso. O RSRP vale para um elemento de recurso. No RSRQ, o RSSI dobra e o N também dobra, e os dois efeitos se cancelam.
+  </Pergunta>
+  <Pergunta texto="Por que o RSRQ de uma célula isolada piora de madrugada para o horário de pico?">
+    No pico a célula transmite dados em mais elementos de recurso. O RSSI sobe e o RSRP fica igual, então a razão cai de perto de −3 dB para perto de −10,8 dB.
+  </Pergunta>
+</Confira>
+
+## Na prática do software
+
+<NoSoftware>
+  RSRP e RSRQ chegam aos sistemas como colunas de arquivos de drive test e de coletas MDT. O erro mais comum de quem programa com esses dados é tirar a média dos valores em dB como se fossem lineares.
+
+  Uma média de −80 dBm e −100 dBm não é −90 dBm. Em potência, a média é dominada pelo valor mais forte e dá cerca de −83 dBm. Um relatório que faz a média direta em dB mostra uma cobertura pior do que a real.
+
+  ```python
+  import numpy as np
+  media_dbm = 10 * np.log10(np.mean(10 ** (rsrp_dbm / 10)))
+  ```
+</NoSoftware>
+
+## Como pedir a uma IA
+
+<NoPrompt
+  contexto="A IA não sabe de onde vêm os seus dados nem em que unidade estão. Diga a tecnologia, a unidade de cada coluna e o que cada faixa significa na sua operação."
+  porque="O pedido vago («analise a cobertura») leva a IA a escolher limiares por conta própria e a fazer média em dB. O pedido abaixo fixa as unidades, os limiares e a regra da média."
+>
+  ```text
+  Tenho um CSV de drive test LTE com as colunas: lat, lon, rsrp (dBm), rsrq (dB), pci.
+  Escreva uma função em Python (pandas) que classifica cada amostra em quatro grupos:
+  - cobertura boa e canal limpo: rsrp >= -100 e rsrq >= -12
+  - forte, mas sujo: rsrp >= -100 e rsrq < -12
+  - fraco, mas limpo: rsrp < -100 e rsrq >= -12
+  - fraco e sujo: rsrp < -100 e rsrq < -12
+  Para médias por PCI, converta dBm para mW antes de tirar a média e volte para dBm.
+  Devolva também um teste com 4 linhas, uma de cada grupo.
+  ```
+</NoPrompt>
+
+## Como conferir o que a IA fez
+
+<ComoValidar>
+  <Conferir
+    verificar="Peça a média de duas amostras, −80 dBm e −100 dBm."
+    erro="Se vier −90 dBm, a média foi feita em dB. O certo é perto de −83 dBm."
+  />
+  <Conferir
+    verificar="Procure no resultado algum RSRQ acima de −3 dB."
+    erro="Com uma antena transmissora o RSRQ não passa de −3 dB. Valor maior indica fórmula errada ou coluna trocada."
+  />
+  <Conferir
+    verificar="Dobre a largura de banda nos dados de teste e veja se o RSRP muda."
+    erro="O RSRP vale para um elemento de recurso e não depende da banda. Se mudou, o código confundiu RSRP com RSSI."
+  />
+</ComoValidar>
+
+<Flashcards>
+  <Flashcard frente="O que o RSRP mede, e em que unidade?" verso="A potência média recebida em um elemento de recurso que leva sinal de referência, em dBm." />
+  <Flashcard frente="Por que o RSRQ de uma célula isolada e cheia vale −10,8 dB?">
+    Os 12 elementos do bloco têm potência, então o RSSI do bloco vale 12 × RSRP. A razão é 1/12, que em dB dá −10,8.
+  </Flashcard>
+</Flashcards>

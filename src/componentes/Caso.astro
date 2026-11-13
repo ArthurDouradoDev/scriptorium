@@ -1,0 +1,46 @@
+---
+/* Célula de um <Quadro>, com título manuscrito. */
+interface Props {
+  titulo: string;
+}
+
+const { titulo } = Astro.props;
+---
+
+<div class="caso">
+  <h3>{titulo}</h3>
+  <slot />
+</div>
+
+<style>
+  .caso {
+    padding: 16px 18px;
+    font-size: 17px;
+    line-height: 1.45;
+  }
+  .caso:nth-child(odd) {
+    border-right: 1px solid var(--rule);
+  }
+  .caso:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--rule);
+  }
+  .caso h3 {
+    font-family: var(--hand);
+    font-size: 25px;
+    line-height: 1.1;
+    margin: 0 0 6px;
+    font-weight: 700;
+  }
+  .caso :global(p:last-child) {
+    margin-bottom: 0;
+  }
+  @media (max-width: 640px) {
+    .caso {
+      border-right: 0;
+      border-bottom: 1px solid var(--rule);
+    }
+    .caso:last-child {
+      border-bottom: 0;
+    }
+  }
+</style>

@@ -1,0 +1,48 @@
+---
+/* Seção fixa: como usar o conceito num pedido a uma IA, com bloco copiável. */
+interface Props {
+  contexto: string;
+  porque: string;
+}
+
+const { contexto, porque } = Astro.props;
+---
+
+<section class="secao-fixa no-prompt">
+  <p class="secao-fixa-titulo">Pedido para a IA</p>
+  <p class="prompt-nota"><b>Contexto:</b> {contexto}</p>
+  <div class="prompt-bloco" data-codigo>
+    <div class="prompt-topo">
+      <span class="pequeno">Copie e adapte</span>
+      <button type="button" class="botao-copiar" data-copiar aria-label="Copiar pedido">copiar</button>
+    </div>
+    <div class="prompt-codigo">
+      <slot />
+    </div>
+  </div>
+  <p class="prompt-nota"><b>Por que assim:</b> {porque}</p>
+</section>
+
+<style>
+  .prompt-nota {
+    font-size: 17px;
+    line-height: 1.5;
+    margin: 0 0 14px;
+  }
+  .prompt-nota:last-child {
+    margin-bottom: 0;
+  }
+  .prompt-bloco {
+    margin: 14px 0;
+  }
+  .prompt-topo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+  .prompt-codigo :global(pre) {
+    margin: 0;
+  }
+</style>

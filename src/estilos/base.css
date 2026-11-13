@@ -17,6 +17,10 @@ body {
 
 /* ---------- coluna ---------- */
 main { max-width: 680px; margin: 0 auto; padding: 0 16px; }
+main,
+article {
+  counter-reset: secao;
+}
 .larga {
   position: relative;
   left: 50%;
@@ -44,12 +48,19 @@ h2 {
   letter-spacing: -.01em;
   margin: 72px 0 12px;
 }
-h2 .n {
+h2 .n,
+h2:not(:has(> .n))::before {
   font-family: var(--hand);
   font-weight: 500;
   font-size: 30px;
   margin-right: 10px;
   color: var(--muted);
+}
+h2:not(:has(> .n)) {
+  counter-increment: secao;
+}
+h2:not(:has(> .n))::before {
+  content: counter(secao);
 }
 h3 { font-size: 23px; line-height: 1.25; font-weight: 600; margin: 40px 0 8px; }
 p { margin: 0 0 18px; }
@@ -100,6 +111,59 @@ pre {
 pre code { background: none; padding: 0; font-size: inherit; }
 
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+/* ---------- seções fixas (software, prompt, validação) ---------- */
+.secao-fixa {
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin: 26px 0;
+}
+.secao-fixa-titulo {
+  font-family: var(--hand);
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 12px;
+}
+.secao-fixa > :last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- código e botão de copiar ---------- */
+.bloco-codigo {
+  margin: 22px 0;
+}
+.bloco-codigo-topo {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 6px;
+}
+.bloco-codigo pre {
+  margin: 0;
+}
+.botao-copiar {
+  font: inherit;
+  font-family: var(--hand);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--ink);
+  background: none;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  padding: 3px 12px 5px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.botao-copiar:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
+@media print {
+  .botao-copiar,
+  .bloco-codigo-topo { display: none; }
+}
 
 @media (max-width: 640px) {
   body { font-size: 18px; }

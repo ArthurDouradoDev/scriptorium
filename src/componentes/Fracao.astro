@@ -1,0 +1,27 @@
+---
+/* Fração simples para uso dentro de <Formula>. */
+interface Props {
+  'em-cima': string;
+  embaixo: string;
+}
+
+const { 'em-cima': emCima, embaixo } = Astro.props;
+---
+
+<span class="fracao">
+  <span>{emCima}</span>
+  <span>{embaixo}</span>
+</span>
+
+<style>
+  .fracao {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.25;
+  }
+  .fracao span:first-child {
+    border-bottom: 1.5px solid var(--ink);
+    padding: 0 10px 2px;
+  }
+</style>

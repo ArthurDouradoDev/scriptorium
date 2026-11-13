@@ -1,0 +1,22 @@
+---
+/* Anotação manuscrita com barra lateral na cor da tinta. */
+---
+
+<aside class="nota"><slot /></aside>
+
+<style>
+  .nota {
+    font-family: var(--hand);
+    font-size: 23px;
+    line-height: 1.25;
+    border-left: 2px solid var(--ink);
+    padding: 2px 0 2px 16px;
+    margin: 26px 0;
+  }
+  .nota :global(p) {
+    margin: 0 0 8px;
+  }
+  .nota :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

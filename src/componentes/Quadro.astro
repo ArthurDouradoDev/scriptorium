@@ -1,0 +1,22 @@
+---
+/* Grade 2×2 de casos comparados; vira uma coluna no celular. */
+---
+
+<div class="quadro"><slot /></div>
+
+<style>
+  .quadro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1.5px solid var(--ink);
+    border-radius: 14px;
+    overflow: hidden;
+    margin: 26px 0;
+  }
+  @media (max-width: 640px) {
+    .quadro {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

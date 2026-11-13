@@ -1,0 +1,37 @@
+---
+/* Cartão individual dentro de <Flashcards>. */
+interface Props {
+  frente: string;
+  verso?: string;
+}
+
+const { frente, verso } = Astro.props;
+---
+
+<div class="flashcard" data-flashcard>
+  <p class="flashcard-frente">{frente}</p>
+  <div class="flashcard-verso">
+    {verso ? <p>{verso}</p> : <slot />}
+  </div>
+</div>
+
+<style>
+  .flashcard {
+    border-top: 1px solid var(--rule);
+    padding: 10px 0;
+  }
+  .flashcard:last-child {
+    padding-bottom: 0;
+  }
+  .flashcard-frente {
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .flashcard-verso {
+    color: var(--muted);
+    font-size: 17px;
+  }
+  .flashcard-verso :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

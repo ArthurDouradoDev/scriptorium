@@ -1,0 +1,31 @@
+---
+/* Pergunta com resposta recolhida em <details>. */
+interface Props {
+  texto: string;
+}
+
+const { texto } = Astro.props;
+---
+
+<details class="pergunta">
+  <summary>{texto}</summary>
+  <div class="resposta"><slot /></div>
+</details>
+
+<style>
+  .pergunta {
+    border-bottom: 1px solid var(--rule);
+    padding: 12px 0;
+  }
+  .pergunta summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .pergunta .resposta {
+    margin: 10px 0 2px;
+    color: var(--muted);
+  }
+  .pergunta .resposta :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

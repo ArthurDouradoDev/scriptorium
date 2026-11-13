@@ -1,0 +1,26 @@
+---
+/* Bloco recolhido com a contagem de flashcards da página (exportação na f8). */
+const html = await Astro.slots.render('default');
+const contagem = (html.match(/data-flashcard/g) ?? []).length;
+---
+
+<details class="flashcards">
+  <summary>Flashcards ({contagem})</summary>
+  <div class="flashcards-lista" set:html={html} />
+</details>
+
+<style>
+  .flashcards {
+    border: 1px solid var(--rule);
+    border-radius: 14px;
+    padding: 12px 18px;
+    margin: 36px 0;
+  }
+  .flashcards summary {
+    cursor: pointer;
+    font-weight: 600;
+  }
+  .flashcards-lista {
+    margin-top: 12px;
+  }
+</style>
