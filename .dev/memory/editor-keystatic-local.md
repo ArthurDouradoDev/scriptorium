@@ -22,10 +22,10 @@ Quem tem o repositório roda `npm run dev` e escreve em `/keystatic`, sem mexer 
 ## Consequências
 
 - Cada componente de `src/componentes/mdx.ts` precisa ser declarado no `keystatic.config.ts`, com formulário.
-- Reposicionar figura: recortar e colar o bloco no texto, e o campo `largura` (`texto` ou `larga`). Mexer dentro do desenho é trabalho das skills.
+- Reposicionar figura: arrastar o bloco no texto, e o campo `largura` (`texto` ou `larga`). Mexer dentro do desenho é trabalho das skills.
 - O editor não gera figuras nem chama IA. As skills geram no Claude Code e o autor insere o bloco pelo menu.
-- A prévia do editor é genérica; o estilo final se vê no site local.
+- Cada bloco tem prévia própria em `src/editor/blocos.tsx` (a figura à caneta é montada de verdade); o editor usa só as cores de `tokens.css`.
 
-## Ainda não validado
+## Validado na f6
 
-O Keystatic não foi testado neste projeto. A fase f6 do plano `v1-motor` começa por um teste de meia hora (arquivo salvo sem `import`, diff mínimo, bloco movível). Se falhar, repetir com o TinaCMS. Conferir também o ritmo de manutenção do projeto antes de adotar.
+Testado com `@keystatic/core` 0.6.9: arquivo salvo sem `import`, bloco arrastado de lugar, imagem enviada cai em `imagens/`. O diff fica mínimo porque o conteúdo de exemplo está no formato que o editor grava; página escrita à mão muda de formato no primeiro salvamento. `tests/editor.test.ts` garante que toda página abre no editor. Detalhes em `.dev/errors/keystatic-mdx-inline-e-imagens.md`.

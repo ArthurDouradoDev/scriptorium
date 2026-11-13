@@ -1,5 +1,7 @@
 titulo: Guia de RF
-resumo: Fundamentos de radiofrequência explicados com intuição física, exemplos práticos e figuras simples.
+resumo: >-
+  Fundamentos de radiofrequência explicados com intuição física, exemplos
+  práticos e figuras simples.
 cores:
   vermelho: sinal de referência / potência útil
   verde: interferência / outra célula

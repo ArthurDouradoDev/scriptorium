@@ -39,7 +39,7 @@ Formato:
 </Flashcards>
 ```
 
-Use a forma curta (`verso="..."`) para resposta de uma frase, e a forma com conteúdo para resposta com mais de uma frase, lista ou fórmula.
+Use a forma curta (`verso="..."`) para resposta de uma frase, e a forma com conteúdo para resposta com mais de uma frase, lista ou fórmula. As duas abrem no editor local; ao salvar, ele acrescenta um corpo vazio à forma curta, sem mudar o card. Por isso a página de exemplo usa só a forma com conteúdo.
 
 Regras de um bom card:
 

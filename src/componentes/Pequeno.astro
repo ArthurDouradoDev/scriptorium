@@ -1,0 +1,14 @@
+---
+/* Texto em letra miúda: nota de rodapé de tabela ou aviso de modelo simplificado. */
+---
+
+<div class="pequeno bloco-pequeno"><slot /></div>
+
+<style>
+  .bloco-pequeno {
+    margin: 0 0 18px;
+  }
+  .bloco-pequeno :global(p:last-child) {
+    margin-bottom: 0;
+  }
+</style>

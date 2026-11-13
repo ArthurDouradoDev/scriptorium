@@ -3,10 +3,12 @@
    dentro de figuras (ver .dev/memory/paleta-de-figuras.md).
    Critério da paleta, nos dois temas: contraste de pelo menos 4,5:1 com o fundo e,
    em simulação de protanopia, deuteranopia e tritanopia, as três cores distintas
-   entre si e da tinta (menor ΔE entre pares acima de 20). */
+   entre si e da tinta (menor ΔE entre pares acima de 20).
+   O editor local (Keystatic) marca o tema escolhido nele com .kui-scheme--light/dark. */
 
 :root,
-[data-theme="light"] {
+[data-theme="light"],
+.kui-scheme--light {
   color-scheme: light;
   --bg: #ffffff;
   --ink: #0f2167;
@@ -16,7 +18,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
+  :root:not([data-theme="light"]):not(.kui-scheme--light) {
     color-scheme: dark;
     --bg: #000000;
     --ink: #ffffff;
@@ -26,7 +28,8 @@
   }
 }
 
-[data-theme="dark"] {
+[data-theme="dark"],
+.kui-scheme--dark {
   color-scheme: dark;
   --bg: #000000;
   --ink: #ffffff;
@@ -38,7 +41,8 @@
 /* Derivadas: repetidas em [data-theme] para valerem também num trecho
    da página com tema próprio (a prévia mostra os dois temas lado a lado). */
 :root,
-[data-theme] {
+[data-theme],
+[class*="kui-scheme--"] {
   --muted: color-mix(in srgb, var(--ink) 62%, var(--bg));
   --rule: color-mix(in srgb, var(--ink) 18%, var(--bg));
   --wash: color-mix(in srgb, var(--ink) 5%, var(--bg));

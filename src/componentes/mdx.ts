@@ -11,6 +11,7 @@ import Imagem from './Imagem.astro';
 import NoPrompt from './NoPrompt.astro';
 import NoSoftware from './NoSoftware.astro';
 import Nota from './Nota.astro';
+import Pequeno from './Pequeno.astro';
 import Pergunta from './Pergunta.astro';
 import Quadro from './Quadro.astro';
 import Resumo from './Resumo.astro';
@@ -31,6 +32,7 @@ export const componentes = {
   NoPrompt,
   NoSoftware,
   Nota,
+  Pequeno,
   Pergunta,
   Quadro,
   Resumo,

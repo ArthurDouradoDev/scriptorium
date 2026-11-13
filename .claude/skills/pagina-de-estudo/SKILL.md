@@ -90,6 +90,9 @@ Nenhum `import`. Use os componentes direto. Atributos e exemplos completos em [m
 | Foto, captura de tela | `<Imagem arquivo="..." alt="..." legenda="..." origem="..." />` |
 | Resumo final | `<Resumo>` com lista |
 | Pergunta com resposta escondida | `<Confira>` com `<Pergunta>` |
+| Nota de rodapé de tabela, aviso de modelo simplificado | `<Pequeno>` |
+
+**Para a página abrir no editor local (`/keystatic`):** componente com conteúdo fica com abertura, conteúdo e fechamento em linhas próprias (nunca `<Caso titulo="...">texto</Caso>` numa linha só); nada de HTML cru como `<p class="...">`. O comentário `{/* FIGURA: ... */}` também impede o editor de abrir a página: tire-o quando a figura for inserida.
 
 **Figuras:** não desenhe aqui. Para cada ponto em que um desenho ensina melhor que o texto, deixe um comentário no MDX e liste na resposta final:
 

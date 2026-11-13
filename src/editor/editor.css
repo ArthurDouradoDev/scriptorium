@@ -1,0 +1,157 @@
+/* Aparência do editor local (Keystatic). Depende de tokens.css: nenhuma cor é escrita
+   aqui. A moldura do editor passa a usar só --bg e --ink, misturadas em tons, e o texto
+   em edição imita base.css e os componentes de src/componentes. */
+
+/* ---------- moldura do editor nas duas cores ----------
+   O [class] só dá peso ao seletor para vencer o CSS que o Keystatic injeta depois. */
+[class].kui-scheme--auto,
+[class].kui-scheme--light,
+[class].kui-scheme--dark {
+  --kui-color-scale-slate1: var(--bg);
+  --kui-color-scale-slate2: color-mix(in srgb, var(--ink) 2%, var(--bg));
+  --kui-color-scale-slate3: color-mix(in srgb, var(--ink) 4%, var(--bg));
+  --kui-color-scale-slate4: color-mix(in srgb, var(--ink) 7%, var(--bg));
+  --kui-color-scale-slate5: color-mix(in srgb, var(--ink) 11%, var(--bg));
+  --kui-color-scale-slate6: var(--rule);
+  --kui-color-scale-slate7: color-mix(in srgb, var(--ink) 30%, var(--bg));
+  --kui-color-scale-slate8: color-mix(in srgb, var(--ink) 45%, var(--bg));
+  --kui-color-scale-slate9: var(--muted);
+  --kui-color-scale-slate10: color-mix(in srgb, var(--ink) 82%, var(--bg));
+  --kui-color-scale-slate11: var(--ink);
+
+  --kui-color-scale-indigo1: color-mix(in srgb, var(--ink) 2%, var(--bg));
+  --kui-color-scale-indigo2: color-mix(in srgb, var(--ink) 4%, var(--bg));
+  --kui-color-scale-indigo3: color-mix(in srgb, var(--ink) 6%, var(--bg));
+  --kui-color-scale-indigo4: color-mix(in srgb, var(--ink) 9%, var(--bg));
+  --kui-color-scale-indigo5: color-mix(in srgb, var(--ink) 13%, var(--bg));
+  --kui-color-scale-indigo6: color-mix(in srgb, var(--ink) 20%, var(--bg));
+  --kui-color-scale-indigo7: color-mix(in srgb, var(--ink) 30%, var(--bg));
+  --kui-color-scale-indigo8: color-mix(in srgb, var(--ink) 50%, var(--bg));
+  --kui-color-scale-indigo9: var(--ink);
+  --kui-color-scale-indigo10: color-mix(in srgb, var(--ink) 88%, var(--bg));
+  --kui-color-scale-indigo11: var(--ink);
+
+  --kui-color-foreground-on-emphasis: var(--bg);
+  --kui-typography-font-family-base: var(--serif);
+}
+
+/* ---------- texto em edição, como na página ---------- */
+.ProseMirror {
+  font-family: var(--serif);
+  font-size: 19px;
+  line-height: 1.65;
+  color: var(--ink);
+  counter-reset: secao figura;
+}
+.ProseMirror p { margin: 0 0 18px; }
+.ProseMirror h2 {
+  font-size: 32px;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -.01em;
+  margin: 56px 0 12px;
+  counter-increment: secao;
+}
+.ProseMirror h2::before {
+  content: counter(secao);
+  font-family: var(--hand);
+  font-weight: 500;
+  font-size: 30px;
+  margin-right: 10px;
+  color: var(--muted);
+}
+.ProseMirror h3 { font-size: 23px; line-height: 1.25; font-weight: 600; margin: 32px 0 8px; }
+.ProseMirror ul,
+.ProseMirror ol { padding-left: 20px; margin: 0 0 18px; }
+.ProseMirror li { margin-bottom: 8px; }
+.ProseMirror li > p { margin: 0; }
+.ProseMirror table { width: 100%; border-collapse: collapse; font-size: 17px; margin: 22px 0; }
+.ProseMirror th,
+.ProseMirror td { text-align: left; padding: 9px 10px 9px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+.ProseMirror th { font-weight: 600; border-bottom: 1.5px solid var(--ink); }
+.ProseMirror td > p,
+.ProseMirror th > p { margin: 0; }
+.ProseMirror pre {
+  font-size: 15px;
+  line-height: 1.5;
+  background: var(--wash);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+}
+.ProseMirror :not(pre) > code {
+  font-size: .86em;
+  background: var(--wash);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.ed-vazio { font-family: var(--hand); font-size: 22px; color: var(--muted); margin: 0; padding: 18px 0; text-align: center; }
+
+/* ---------- Termo ---------- */
+.ed-termo { font-weight: 600; border-bottom: 1.5px solid var(--ink); }
+
+/* ---------- Figura e Imagem: numeração acompanha a ordem no texto ---------- */
+.ed-figura { margin: 8px 0; }
+.ed-figura .caneta { margin: 0; }
+.ed-legenda { font-size: 16px; line-height: 1.45; color: var(--muted); margin-top: 10px; }
+.ed-legenda-numerada::before {
+  counter-increment: figura;
+  content: "Figura " counter(figura) ". ";
+  font-weight: 700;
+  color: var(--ink);
+}
+.ed-moldura { position: relative; padding: 10px; border: 1.2px solid var(--ink); }
+.ed-moldura img { display: block; width: 100%; height: auto; }
+.ed-moldura-tinta { background: var(--ink); }
+.ed-moldura-tinta img { filter: grayscale(1) contrast(1.05); mix-blend-mode: screen; }
+/* Tema escuro, como em Imagem.astro: brilho reduzido e tinta sem mistura. */
+.kui-scheme--dark .ed-moldura img { filter: brightness(.88); }
+.kui-scheme--dark .ed-moldura-tinta { background: var(--bg); }
+.kui-scheme--dark .ed-moldura-tinta img { filter: grayscale(1) brightness(.88); mix-blend-mode: normal; }
+@media (prefers-color-scheme: dark) {
+  .kui-scheme--auto .ed-moldura img { filter: brightness(.88); }
+  .kui-scheme--auto .ed-moldura-tinta { background: var(--bg); }
+  .kui-scheme--auto .ed-moldura-tinta img { filter: grayscale(1) brightness(.88); mix-blend-mode: normal; }
+}
+
+/* ---------- Nota, Pequeno, Fórmula ---------- */
+.ed-nota {
+  font-family: var(--hand);
+  font-size: 23px;
+  line-height: 1.25;
+  border-left: 2px solid var(--ink);
+  padding: 2px 0 2px 16px;
+}
+.ed-nota p { margin: 0 0 8px; }
+.ed-pequeno { font-size: 15.5px; color: var(--muted); }
+.ed-formula { font-size: 26px; text-align: center; }
+.ed-formula p { margin: 0; }
+.ed-fracao { display: inline-flex; flex-direction: column; align-items: center; line-height: 1.25; vertical-align: middle; }
+.ed-fracao span:first-child { border-bottom: 1.5px solid var(--ink); padding: 0 10px 2px; }
+
+/* ---------- Quadro e Caso ---------- */
+.ed-quadro { border: 1.5px solid var(--ink); border-radius: 14px; padding: 4px 8px; }
+.ed-caso { font-size: 17px; line-height: 1.45; }
+.ed-caso h3 { font-family: var(--hand); font-size: 25px; line-height: 1.1; margin: 0 0 6px; font-weight: 700; }
+.ed-caso p:last-child { margin-bottom: 0; }
+
+/* ---------- Confira e Pergunta ---------- */
+.ed-pergunta { border-bottom: 1px solid var(--rule); padding: 4px 0 8px; }
+.ed-pergunta-texto { font-weight: 600; margin: 0 0 6px; }
+.ed-resposta { color: var(--muted); }
+.ed-resposta p:last-child { margin-bottom: 0; }
+
+/* ---------- seções fixas: software, prompt, conferência ---------- */
+.ed-secao-fixa { border: 1.5px solid var(--ink); border-radius: 14px; padding: 18px 20px; }
+.ed-secao-fixa-titulo { font-family: var(--hand); font-size: 26px; font-weight: 700; line-height: 1.1; margin: 0 0 12px; }
+.ed-prompt-nota { font-size: 17px; line-height: 1.5; margin: 0 0 14px; }
+.ed-conferir { font-size: 17px; line-height: 1.45; }
+.ed-conferir-verificar { font-weight: 600; margin: 0 0 4px; }
+.ed-conferir-erro { color: var(--muted); margin: 0; }
+
+/* ---------- Flashcards ---------- */
+.ed-flashcards { border: 1px solid var(--rule); border-radius: 14px; padding: 12px 18px; }
+.ed-flashcards-titulo { font-weight: 600; margin: 0 0 8px; }
+.ed-flashcard-frente { font-weight: 600; margin: 0 0 4px; }
+.ed-flashcard-verso { color: var(--muted); font-size: 17px; }
+.ed-flashcard-verso p:last-child { margin-bottom: 0; }
