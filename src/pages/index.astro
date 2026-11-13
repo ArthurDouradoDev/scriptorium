@@ -1,18 +1,140 @@
 ---
+import { getCollection } from 'astro:content';
 import Pagina from '../layouts/Pagina.astro';
+import { carregarLivro, listarLivros } from '../conteudo/livro';
+import { paginaVisivel } from '../conteudo/raizes';
+
+const todosCapitulos = await getCollection('capitulos');
+const livros = listarLivros().map((info) => carregarLivro(info.id, todosCapitulos));
+
+const posts = (await getCollection('posts', (entrada) => paginaVisivel(entrada.data.etapa)))
+  .sort((a, b) => b.data.data.getTime() - a.data.data.getTime())
+  .slice(0, 5);
+
+const formatadorData = new Intl.DateTimeFormat('pt-BR', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
 ---
 
 <Pagina
   titulo="Biblioteca de estudo"
-  chamada="em construção"
+  chamada="caderno aberto"
   subtitulo="Livros com capítulos e um blog, escritos à mão e revisados com IA, com ilustrações à caneta."
-  trilha={[{ rotulo: 'Início' }]}
+  trilha={[{ rotulo: 'Início' }, { rotulo: 'Livros', href: '/livros/' }, { rotulo: 'Blog', href: '/blog/' }]}
 >
-  <p>
-    Esta é uma página provisória. Os livros e o blog entram nas próximas fases; por enquanto ela só mostra o layout:
-    tipografia, barra do topo, troca de tema e barra de progresso de leitura.
-  </p>
-  <p>
-    O primeiro livro é um guia de radiofrequência. A mesma estrutura vai servir a outros assuntos, sem retrabalho.
-  </p>
+  <section aria-labelledby="sec-livros">
+    <div class="sec-topo">
+      <h2 id="sec-livros">
+        <span class="n">§</span>Livros
+      </h2>
+      <a class="ver-todos" href="/livros/">ver todos →</a>
+    </div>
+    {
+      livros.length === 0 ? (
+        <p class="pequeno">Nenhum livro disponível.</p>
+      ) : (
+        <ul class="lista-inicio">
+          {livros.map((livro) => (
+            <li>
+              <a class="item-link" href={`/livros/${livro.id}/`}>
+                {livro.titulo}
+              </a>
+              <p class="item-resumo">{livro.resumo}</p>
+              <p class="pequeno">
+                {livro.partes.length} {livro.partes.length === 1 ? 'parte' : 'partes'} · {livro.capitulos.length}{' '}
+                {livro.capitulos.length === 1 ? 'capítulo' : 'capítulos'}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
+
+  <section aria-labelledby="sec-blog">
+    <div class="sec-topo">
+      <h2 id="sec-blog">
+        <span class="n">§</span>Blog
+      </h2>
+      <a class="ver-todos" href="/blog/">ver todos →</a>
+    </div>
+    {
+      posts.length === 0 ? (
+        <p class="pequeno">Nenhum texto publicado.</p>
+      ) : (
+        <ul class="lista-inicio">
+          {posts.map((post) => (
+            <li>
+              <div class="post-linha">
+                <a class="item-link" href={`/blog/${post.id}/`}>
+                  {post.data.titulo}
+                </a>
+                <time class="pequeno" datetime={post.data.data.toISOString().slice(0, 10)}>
+                  {formatadorData.format(post.data.data)}
+                </time>
+              </div>
+              <p class="item-resumo">{post.data.resumo}</p>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </section>
 </Pagina>
+
+<style>
+  .sec-topo {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .ver-todos {
+    font-family: var(--hand);
+    font-size: 22px;
+    text-decoration: none;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .ver-todos:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+  .lista-inicio {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    display: grid;
+    gap: 20px;
+  }
+  .lista-inicio li {
+    margin: 0;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .lista-inicio li:last-child {
+    border-bottom: none;
+  }
+  .item-link {
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-decoration: none;
+  }
+  .item-link:hover {
+    text-decoration: underline;
+  }
+  .item-resumo {
+    margin: 6px 0 4px;
+  }
+  .post-linha {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+</style>

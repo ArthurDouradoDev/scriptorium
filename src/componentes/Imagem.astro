@@ -3,8 +3,8 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import {
   caminhoDaPaginaPorUrl,
-  proximoNumeroFigura,
   resolverArquivoPagina,
+  rotuloFigura,
 } from '../caneta/figura';
 
 interface Props {
@@ -36,7 +36,7 @@ if (origem === 'terceiros' && (!credito || !credito.trim())) {
 }
 
 const locals = Astro.locals as Record<string | symbol, unknown>;
-const numero = legenda ? proximoNumeroFigura(locals) : null;
+const numero = legenda ? rotuloFigura(locals) : null;
 
 const mapaImagens = import.meta.glob<{ default: ImageMetadata }>(
   '/conteudo/**/imagens/*.{png,jpg,jpeg,webp,avif,gif}',

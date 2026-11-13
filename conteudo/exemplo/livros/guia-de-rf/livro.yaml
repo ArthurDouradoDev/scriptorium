@@ -1,7 +1,14 @@
 titulo: Guia de RF
 resumo: Fundamentos de radiofrequência explicados com intuição física, exemplos práticos e figuras simples.
+cores:
+  vermelho: sinal de referência / potência útil
+  verde: interferência / outra célula
+  ambar: carga na célula ou ruído adicional
 partes:
   - titulo: Fundamentos
     capitulos:
       - introducao
       - onda-e-espectro
+  - titulo: Medidas no LTE
+    capitulos:
+      - rsrp-e-rsrq

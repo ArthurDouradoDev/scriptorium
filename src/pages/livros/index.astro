@@ -1,0 +1,69 @@
+---
+import { getCollection } from 'astro:content';
+import Pagina from '../../layouts/Pagina.astro';
+import { carregarLivro, listarLivros } from '../../conteudo/livro';
+
+const todosCapitulos = await getCollection('capitulos');
+const livros = listarLivros().map((info) => carregarLivro(info.id, todosCapitulos));
+---
+
+<Pagina
+  titulo="Livros"
+  chamada="estante"
+  subtitulo="Livros organizados em partes e capítulos, com ilustrações à caneta e simulações."
+  trilha={[{ rotulo: 'Início', href: '/' }, { rotulo: 'Livros' }]}
+>
+  {
+    livros.length === 0 ? (
+      <p class="pequeno">Nenhum livro disponível no momento.</p>
+    ) : (
+      <ul class="lista-livros">
+        {livros.map((livro) => (
+          <li class="item-livro">
+            <a class="livro-titulo" href={`/livros/${livro.id}/`}>
+              {livro.titulo}
+            </a>
+            <p class="livro-resumo">{livro.resumo}</p>
+            <p class="pequeno livro-meta">
+              {livro.partes.length} {livro.partes.length === 1 ? 'parte' : 'partes'} · {livro.capitulos.length}{' '}
+              {livro.capitulos.length === 1 ? 'capítulo' : 'capítulos'}
+            </p>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Pagina>
+
+<style>
+  .lista-livros {
+    list-style: none;
+    padding: 0;
+    margin: 24px 0 0;
+    display: grid;
+    gap: 28px;
+  }
+  .item-livro {
+    margin: 0;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .item-livro:last-child {
+    border-bottom: none;
+  }
+  .livro-titulo {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+  .livro-titulo:hover {
+    text-decoration: underline;
+  }
+  .livro-resumo {
+    margin: 8px 0 6px;
+  }
+  .livro-meta {
+    margin: 0;
+  }
+</style>

@@ -1,0 +1,87 @@
+---
+import { getCollection } from 'astro:content';
+import Pagina from '../../layouts/Pagina.astro';
+import { paginaVisivel } from '../../conteudo/raizes';
+
+const posts = (await getCollection('posts', (entrada) => paginaVisivel(entrada.data.etapa))).sort(
+  (a, b) => b.data.data.getTime() - a.data.data.getTime(),
+);
+
+const formatadorData = new Intl.DateTimeFormat('pt-BR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<Pagina
+  titulo="Blog"
+  chamada="notas soltas"
+  subtitulo="Ensaios curtos, anotações de estudo e ideias que ainda podem virar capítulos."
+  trilha={[{ rotulo: 'Início', href: '/' }, { rotulo: 'Blog' }]}
+>
+  {
+    posts.length === 0 ? (
+      <p class="pequeno">Nenhum texto publicado no momento.</p>
+    ) : (
+      <ol class="lista-posts">
+        {posts.map((post) => (
+          <li class="item-post">
+            <time class="post-data" datetime={post.data.data.toISOString().slice(0, 10)}>
+              {formatadorData.format(post.data.data)}
+            </time>
+            <a class="post-titulo" href={`/blog/${post.id}/`}>
+              {post.data.titulo}
+            </a>
+            <p class="post-resumo">{post.data.resumo}</p>
+            {post.data.tags && post.data.tags.length > 0 && (
+              <p class="pequeno post-tags">{post.data.tags.join(' · ')}</p>
+            )}
+          </li>
+        ))}
+      </ol>
+    )
+  }
+</Pagina>
+
+<style>
+  .lista-posts {
+    list-style: none;
+    padding: 0;
+    margin: 24px 0 0;
+    display: grid;
+    gap: 28px;
+  }
+  .item-post {
+    margin: 0;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    gap: 6px;
+  }
+  .item-post:last-child {
+    border-bottom: none;
+  }
+  .post-data {
+    font-family: var(--hand);
+    font-size: 21px;
+    line-height: 1;
+    color: var(--muted);
+  }
+  .post-titulo {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+  }
+  .post-titulo:hover {
+    text-decoration: underline;
+  }
+  .post-resumo {
+    margin: 0;
+  }
+  .post-tags {
+    margin: 0;
+  }
+</style>

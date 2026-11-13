@@ -20,7 +20,7 @@ const { Content } = await render(post);
   titulo={post.data.titulo}
   chamada={post.data.chamada}
   subtitulo={post.data.resumo}
-  trilha={[{ rotulo: 'Início', href: '/' }, { rotulo: 'Blog' }, { rotulo: post.data.titulo }]}
+  trilha={[{ rotulo: 'Início', href: '/' }, { rotulo: 'Blog', href: '/blog/' }, { rotulo: post.data.titulo }]}
 >
   <Content components={componentes} />
 </Pagina>

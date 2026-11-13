@@ -2,30 +2,98 @@
 import { getCollection, render } from 'astro:content';
 import Pagina from '../../../layouts/Pagina.astro';
 import { componentes } from '../../../componentes/mdx';
-import { paginaVisivel } from '../../../conteudo/raizes';
+import { definirNumeroCapitulo } from '../../../caneta/figura';
+import { carregarLivro, listarLivros } from '../../../conteudo/livro';
 
 export async function getStaticPaths() {
-  const capitulos = await getCollection('capitulos', (entrada) =>
-    paginaVisivel(entrada.data.etapa),
-  );
-  return capitulos.map((capitulo) => {
-    const [livro, slugCapitulo] = capitulo.id.split('/');
-    return {
-      params: { livro, capitulo: slugCapitulo },
-      props: { capitulo, livro },
-    };
+  const todosCapitulos = await getCollection('capitulos');
+  const infosLivros = listarLivros();
+  const idsLivros = new Set(infosLivros.map((l) => l.id));
+
+  for (const cap of todosCapitulos) {
+    const [livroId] = cap.id.split('/');
+    if (!idsLivros.has(livroId)) {
+      throw new Error(
+        `Capítulo "${cap.id}" encontrado sem livro.yaml correspondente em livros/${livroId}/livro.yaml.`,
+      );
+    }
+  }
+
+  return infosLivros.flatMap((info) => {
+    const livro = carregarLivro(info.id, todosCapitulos);
+    return livro.capitulos.map((cap) => ({
+      params: { livro: livro.id, capitulo: cap.slug },
+      props: { livro, cap },
+    }));
   });
 }
 
-const { capitulo, livro } = Astro.props;
-const { Content } = await render(capitulo);
+const { livro, cap } = Astro.props;
+definirNumeroCapitulo(Astro.locals as Record<string | symbol, unknown>, cap.numero);
+const { Content } = await render(cap.entrada);
 ---
 
 <Pagina
-  titulo={capitulo.data.titulo}
-  chamada={capitulo.data.chamada}
-  subtitulo={capitulo.data.resumo}
-  trilha={[{ rotulo: 'Início', href: '/' }, { rotulo: livro }, { rotulo: capitulo.data.titulo }]}
+  titulo={cap.titulo}
+  chamada={`capítulo ${cap.numero}`}
+  subtitulo={cap.resumo}
+  trilha={[
+    { rotulo: livro.titulo, href: `/livros/${livro.id}/` },
+    { rotulo: cap.parte.titulo },
+    { rotulo: cap.titulo },
+  ]}
 >
   <Content components={componentes} />
+
+  <Fragment slot="rodape">
+    {
+      cap.anterior ? (
+        <a class="nav-cap nav-anterior" href={`/livros/${livro.id}/${cap.anterior.slug}/`}>
+          <span class="nav-rotulo">anterior</span>
+          <span>← {cap.anterior.numero}. {cap.anterior.titulo}</span>
+        </a>
+      ) : (
+        <a class="nav-cap nav-anterior" href={`/livros/${livro.id}/`}>
+          <span class="nav-rotulo">livro</span>
+          <span>← Sumário</span>
+        </a>
+      )
+    }
+    {
+      cap.proximo ? (
+        <a class="nav-cap nav-proximo" href={`/livros/${livro.id}/${cap.proximo.slug}/`}>
+          <span class="nav-rotulo">próximo</span>
+          <span>{cap.proximo.numero}. {cap.proximo.titulo} →</span>
+        </a>
+      ) : (
+        <a class="nav-cap nav-proximo" href={`/livros/${livro.id}/`}>
+          <span class="nav-rotulo">fim do livro</span>
+          <span>Sumário →</span>
+        </a>
+      )
+    }
+  </Fragment>
 </Pagina>
+
+<style>
+  .nav-cap {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .nav-cap:hover span:last-child {
+    text-decoration: underline;
+  }
+  .nav-proximo {
+    text-align: right;
+    margin-left: auto;
+  }
+  .nav-rotulo {
+    font-family: var(--hand);
+    font-size: 20px;
+    line-height: 1;
+    color: var(--muted);
+  }
+</style>

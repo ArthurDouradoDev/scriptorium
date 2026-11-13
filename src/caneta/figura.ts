@@ -2,10 +2,16 @@ import { montar, type Figura } from './caneta.js';
 import { raizesAtivas, type Raiz } from '../conteudo/raizes';
 
 const CHAVE_CONTADOR = Symbol.for('rf_guide.contadorFigura');
+const CHAVE_CAPITULO = Symbol.for('rf_guide.numeroCapitulo');
 
 /** Extrai o caminho relativo da página (ex.: `livros/guia-de-rf/introducao`) a partir da URL. */
 export function caminhoDaPaginaPorUrl(pathname: string): string {
   return pathname.replace(/^\/+|\/+$/g, '');
+}
+
+/** Define o número do capítulo atual no contexto de renderização da página. */
+export function definirNumeroCapitulo(contexto: Record<string | symbol, unknown>, numero: number): void {
+  contexto[CHAVE_CAPITULO] = numero;
 }
 
 /** Retorna o número sequencial da próxima figura na página atual (1, 2, 3...). */
@@ -14,6 +20,13 @@ export function proximoNumeroFigura(contexto: Record<string | symbol, unknown>):
   const proximo = atual + 1;
   contexto[CHAVE_CONTADOR] = proximo;
   return proximo;
+}
+
+/** Retorna o rótulo da próxima figura: `C.N` dentro de um capítulo ou `N` em páginas avulsas. */
+export function rotuloFigura(contexto: Record<string | symbol, unknown>): string {
+  const numero = proximoNumeroFigura(contexto);
+  const capitulo = contexto[CHAVE_CAPITULO];
+  return typeof capitulo === 'number' ? `${capitulo}.${numero}` : String(numero);
 }
 
 export interface OpcoesResolverArquivo<T> {

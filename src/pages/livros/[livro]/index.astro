@@ -1,0 +1,190 @@
+---
+import { getCollection, render } from 'astro:content';
+import Pagina from '../../../layouts/Pagina.astro';
+import { carregarLivro, listarLivros } from '../../../conteudo/livro';
+
+export async function getStaticPaths() {
+  const todosCapitulos = await getCollection('capitulos');
+  const infosLivros = listarLivros();
+
+  return infosLivros.map((info) => {
+    const livro = carregarLivro(info.id, todosCapitulos);
+    return {
+      params: { livro: livro.id },
+      props: { livro },
+    };
+  });
+}
+
+const { livro } = Astro.props;
+
+const secoesPorCapitulo = new Map<string, Array<{ slug: string; text: string }>>();
+for (const cap of livro.capitulos) {
+  const { headings } = await render(cap.entrada);
+  secoesPorCapitulo.set(
+    cap.slug,
+    headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text })),
+  );
+}
+---
+
+<Pagina
+  titulo={livro.titulo}
+  chamada="sumário"
+  subtitulo={livro.resumo}
+  trilha={[
+    { rotulo: 'Início', href: '/' },
+    { rotulo: 'Livros', href: '/livros/' },
+    { rotulo: livro.titulo },
+  ]}
+>
+  {
+    livro.cores && (
+      <section class="secao-fixa legenda-cores" aria-label="Convenção de cores">
+        <div class="secao-fixa-titulo">Convenção de cores nas figuras</div>
+        <ul class="lista-cores">
+          {livro.cores.map((cor) => (
+            <li>
+              <span class="amostra-cor" style={`--cor-amostra: var(${cor.cssVar});`} aria-hidden="true" />
+              <strong>{cor.rotulo}:</strong> {cor.significado}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {
+    livro.partes.map((parte) => (
+      <section class="parte-sumario">
+        <h2>
+          <span class="n">Parte {parte.numero}</span>
+          {parte.titulo}
+        </h2>
+        <ol class="lista-capitulos">
+          {parte.capitulos.map((cap) => {
+            const secoes = secoesPorCapitulo.get(cap.slug) ?? [];
+            return (
+              <li class="item-capitulo">
+                <div class="cap-linha">
+                  <span class="cap-num">{cap.numero}</span>
+                  <div class="cap-corpo">
+                    <a class="cap-titulo" href={`/livros/${livro.id}/${cap.slug}/`}>
+                      {cap.titulo}
+                    </a>
+                    <p class="cap-resumo">{cap.resumo}</p>
+                    {secoes.length > 0 && (
+                      <ol class="lista-secoes">
+                        {secoes.map((sec, idx) => (
+                          <li>
+                            <a href={`/livros/${livro.id}/${cap.slug}/#${sec.slug}`}>
+                              <span class="sec-num">{idx + 1}.</span> {sec.text}
+                            </a>
+                          </li>
+                        ))}
+                      </ol>
+                    )}
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </section>
+    ))
+  }
+</Pagina>
+
+<style>
+  .lista-cores {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .lista-cores li {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .amostra-cor {
+    display: inline-block;
+    width: 24px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--cor-amostra);
+    flex-shrink: 0;
+  }
+
+  .lista-capitulos {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+    display: grid;
+    gap: 24px;
+  }
+  .item-capitulo {
+    margin: 0;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .item-capitulo:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .cap-linha {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .cap-num {
+    font-family: var(--hand);
+    font-size: 30px;
+    line-height: 1;
+    color: var(--muted);
+  }
+  .cap-titulo {
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-decoration: none;
+  }
+  .cap-titulo:hover {
+    text-decoration: underline;
+  }
+  .cap-resumo {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.5;
+  }
+  .lista-secoes {
+    list-style: none;
+    padding: 0;
+    margin: 12px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 16px;
+  }
+  .lista-secoes li {
+    margin: 0;
+  }
+  .lista-secoes a {
+    text-decoration: none;
+    color: var(--muted);
+  }
+  .lista-secoes a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+  .sec-num {
+    font-family: var(--hand);
+    font-size: 19px;
+    margin-right: 2px;
+  }
+</style>

@@ -3,9 +3,9 @@ import '../caneta/caneta.css';
 import type { Figura } from '../caneta/caneta.js';
 import {
   caminhoDaPaginaPorUrl,
-  proximoNumeroFigura,
   renderizarFiguraImpressa,
   resolverArquivoPagina,
+  rotuloFigura,
 } from '../caneta/figura';
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 const { nome, legenda, largura = 'texto' } = Astro.props;
 
 const locals = Astro.locals as Record<string | symbol, unknown>;
-const numero = legenda ? proximoNumeroFigura(locals) : null;
+const numero = legenda ? rotuloFigura(locals) : null;
 
 const mapaFiguras = import.meta.glob<{ default: Figura }>('/conteudo/**/figuras/*.js');
 const pagina = typeof locals.pastaPagina === 'string' ? locals.pastaPagina : caminhoDaPaginaPorUrl(Astro.url.pathname);

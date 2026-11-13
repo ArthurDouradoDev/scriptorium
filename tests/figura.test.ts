@@ -3,9 +3,11 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   caminhoDaPaginaPorUrl,
+  definirNumeroCapitulo,
   proximoNumeroFigura,
   renderizarFiguraImpressa,
   resolverArquivoPagina,
+  rotuloFigura,
 } from '../src/caneta/figura';
 import type { Figura } from '../src/caneta/caneta.js';
 import type { Raiz } from '../src/conteudo/raizes';
@@ -62,6 +64,19 @@ describe('proximoNumeroFigura', () => {
 
     const paginaB: Record<string | symbol, unknown> = {};
     expect(proximoNumeroFigura(paginaB)).toBe(1);
+  });
+});
+
+describe('rotuloFigura', () => {
+  it('numera como C.N quando há número de capítulo e N em páginas avulsas', () => {
+    const capitulo3: Record<string | symbol, unknown> = {};
+    definirNumeroCapitulo(capitulo3, 3);
+    expect(rotuloFigura(capitulo3)).toBe('3.1');
+    expect(rotuloFigura(capitulo3)).toBe('3.2');
+
+    const post: Record<string | symbol, unknown> = {};
+    expect(rotuloFigura(post)).toBe('1');
+    expect(rotuloFigura(post)).toBe('2');
   });
 });
 
