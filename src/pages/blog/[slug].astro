@@ -1,7 +1,9 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Pagina from '../../layouts/Pagina.astro';
+import Historico from '../../componentes/Historico.astro';
 import { componentes } from '../../componentes/mdx';
+import { historicoDaPagina } from '../../conteudo/historico';
 import { paginaVisivel } from '../../conteudo/raizes';
 
 export async function getStaticPaths() {
@@ -14,13 +16,18 @@ export async function getStaticPaths() {
 
 const { post } = Astro.props;
 const { Content } = await render(post);
+const mudancas = post.filePath ? historicoDaPagina(post.filePath) : [];
+const ultimaMudanca = mudancas.length > 0 ? mudancas[mudancas.length - 1].data : null;
 ---
 
 <Pagina
   titulo={post.data.titulo}
   chamada={post.data.chamada}
   subtitulo={post.data.resumo}
+  etapa={post.data.etapa}
+  ultimaMudanca={ultimaMudanca}
   trilha={[{ rotulo: 'Início', href: '/' }, { rotulo: 'Blog', href: '/blog/' }, { rotulo: post.data.titulo }]}
 >
   <Content components={componentes} />
+  <Historico etapaAtual={post.data.etapa} mudancas={mudancas} />
 </Pagina>

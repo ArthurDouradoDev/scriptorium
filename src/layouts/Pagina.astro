@@ -8,6 +8,8 @@ import '@fontsource/caveat/500.css';
 import '@fontsource/caveat/700.css';
 import '../estilos/tokens.css';
 import '../estilos/base.css';
+import { rotuloEtapa } from '../conteudo/historico';
+import type { EtapaEditorial } from '../conteudo/raizes';
 
 export interface ItemTrilha {
   rotulo: string;
@@ -23,9 +25,27 @@ interface Props {
   descricao?: string;
   /** Itens da barra do topo, do mais geral ao mais específico. O primeiro sai em negrito. */
   trilha?: ItemTrilha[];
+  /** Etapa editorial da página (exibida no selo do topo). */
+  etapa?: EtapaEditorial;
+  /** Data ISO da última mudança no histórico git. */
+  ultimaMudanca?: string | null;
 }
 
-const { titulo, chamada, subtitulo, descricao = subtitulo, trilha = [{ rotulo: 'Início', href: '/' }] } = Astro.props;
+const {
+  titulo,
+  chamada,
+  subtitulo,
+  descricao = subtitulo,
+  trilha = [{ rotulo: 'Início', href: '/' }],
+  etapa,
+  ultimaMudanca,
+} = Astro.props;
+
+function formatarDataSelo(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
 ---
 
 <!doctype html>
@@ -71,6 +91,14 @@ const { titulo, chamada, subtitulo, descricao = subtitulo, trilha = [{ rotulo: '
         {chamada && <div class="chamada">{chamada}</div>}
         <h1>{titulo}</h1>
         {subtitulo && <p class="subtitulo">{subtitulo}</p>}
+        {
+          etapa && (
+            <p class="selo-editorial">
+              <span class="selo-etapa">{rotuloEtapa(etapa)}</span>
+              {ultimaMudanca && <span class="selo-data"> · atualizado em {formatarDataSelo(ultimaMudanca)}</span>}
+            </p>
+          )
+        }
       </header>
       <slot />
     </main>
@@ -196,6 +224,23 @@ const { titulo, chamada, subtitulo, descricao = subtitulo, trilha = [{ rotulo: '
   }
 
   #progresso { height: 2px; background: var(--ink); width: 0; }
+
+  .selo-editorial {
+    margin: 14px 0 0;
+    font-size: 15px;
+    color: var(--muted);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .selo-etapa {
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 1px 10px;
+    font-size: 13.5px;
+    color: var(--ink);
+  }
 
   .rodape {
     max-width: 680px;

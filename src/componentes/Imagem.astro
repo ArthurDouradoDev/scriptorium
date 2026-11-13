@@ -55,6 +55,13 @@ const imagem = modulo.default;
 const limiteLargura = largura === 'larga' ? 1600 : 1360;
 const larguraRender = Math.min(imagem.width, limiteLargura);
 const ehTinta = tratamento === 'tinta';
+
+const ROTULOS_ORIGEM: Record<'propria' | 'terceiros' | 'ia', string> = {
+  propria: 'imagem própria',
+  terceiros: 'imagem de terceiros',
+  ia: 'gerada por IA',
+};
+const rotuloOrigem = ROTULOS_ORIGEM[origem] ?? origem;
 ---
 
 <figure class={largura === 'larga' ? 'larga' : undefined}>
@@ -75,13 +82,15 @@ const ehTinta = tratamento === 'tinta';
     <span class="moldura-borda" aria-hidden="true"></span>
   </div>
   {
-    (legenda || credito) && (
+    legenda && (
       <figcaption>
         {numero && <b>Figura {numero}.</b>} {legenda}
-        {credito && <span class="credito">{legenda ? ` (${credito})` : credito}</span>}
       </figcaption>
     )
   }
+  <p class="origem-imagem">
+    {rotuloOrigem}{credito && <span class="credito"> · {credito}</span>}
+  </p>
 </figure>
 
 <script>
@@ -230,6 +239,14 @@ const ehTinta = tratamento === 'tinta';
       filter: grayscale(1) brightness(0.88);
       mix-blend-mode: normal;
     }
+  }
+
+  .origem-imagem {
+    margin: 6px 0 0;
+    max-width: 680px;
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--muted);
   }
 
   .credito {

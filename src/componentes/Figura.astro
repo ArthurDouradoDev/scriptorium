@@ -32,6 +32,14 @@ const { chave, valor: carregarFigura } = resolverArquivoPagina({
 const modulo = await carregarFigura();
 const figura = modulo.default;
 const { classes, htmlInterno } = renderizarFiguraImpressa(figura);
+const origem = figura.origem;
+
+const ROTULOS_AUTORIA: Record<string, string> = {
+  ia: 'com IA',
+  humano: 'à mão',
+  misto: 'à mão e com IA',
+};
+const textoAutoria = origem?.autoria ? (ROTULOS_AUTORIA[origem.autoria] ?? origem.autoria) : null;
 ---
 
 <figure class={largura === 'larga' ? 'larga' : undefined}>
@@ -43,7 +51,72 @@ const { classes, htmlInterno } = renderizarFiguraImpressa(figura);
       </figcaption>
     )
   }
+  {
+    origem && (
+      <details class="origem-figura">
+        <summary>como foi feita</summary>
+        <dl class="origem-detalhes">
+          {textoAutoria && (
+            <div>
+              <dt>Autoria</dt>
+              <dd>{textoAutoria}</dd>
+            </div>
+          )}
+          {origem.pedido && (
+            <div>
+              <dt>Pedido</dt>
+              <dd>{origem.pedido}</dd>
+            </div>
+          )}
+          {origem.validacao && (
+            <div>
+              <dt>Validação</dt>
+              <dd>{origem.validacao}</dd>
+            </div>
+          )}
+        </dl>
+      </details>
+    )
+  }
 </figure>
+
+<style>
+  .origem-figura {
+    margin-top: 6px;
+    max-width: 680px;
+    font-size: 14.5px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+  .origem-figura summary {
+    cursor: pointer;
+    font-family: var(--hand);
+    font-size: 18px;
+    line-height: 1.2;
+    color: var(--muted);
+  }
+  .origem-figura summary:hover {
+    color: var(--ink);
+  }
+  .origem-detalhes {
+    margin: 8px 0 0;
+    padding-left: 12px;
+    border-left: 1.5px solid var(--rule);
+    display: grid;
+    gap: 6px;
+  }
+  .origem-detalhes div {
+    display: grid;
+    gap: 2px;
+  }
+  .origem-detalhes dt {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .origem-detalhes dd {
+    margin: 0;
+  }
+</style>
 
 <script>
   import type { Figura } from '../caneta/caneta.js';

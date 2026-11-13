@@ -22,7 +22,7 @@ git -C conteudo/<raiz> status --short -- <caminho/da/pasta-da-pagina>
   npm run registrar -- <pasta-da-pagina> "rascunho"
   ```
 
-  Se o script ainda não existir (ele nasce na fase f7 do plano `v1-motor`), o equivalente é `git -C conteudo/<raiz> add <pasta>` e `git -C conteudo/<raiz> commit -m "conteudo(<slug>): rascunho"`, **sem** trailer de coautoria, porque este commit é só do autor.
+  Esse comando faz o commit na raiz de conteúdo certa (`conteudo(<slug>): rascunho`), **sem** trailer de coautoria, porque o commit é só do autor.
 - **A raiz não é um repositório git:** avise que a página não terá histórico e pergunte se o autor quer seguir assim.
 
 Nunca revise por cima de texto não commitado: o rascunho original se perde e o histórico passa a mentir.

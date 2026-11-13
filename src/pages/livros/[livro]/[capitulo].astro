@@ -1,8 +1,10 @@
 ---
 import { getCollection, render } from 'astro:content';
 import Pagina from '../../../layouts/Pagina.astro';
+import Historico from '../../../componentes/Historico.astro';
 import { componentes } from '../../../componentes/mdx';
 import { definirNumeroCapitulo } from '../../../caneta/figura';
+import { historicoDaPagina } from '../../../conteudo/historico';
 import { carregarLivro, listarLivros } from '../../../conteudo/livro';
 
 export async function getStaticPaths() {
@@ -31,12 +33,16 @@ export async function getStaticPaths() {
 const { livro, cap } = Astro.props;
 definirNumeroCapitulo(Astro.locals as Record<string | symbol, unknown>, cap.numero);
 const { Content } = await render(cap.entrada);
+const mudancas = cap.entrada.filePath ? historicoDaPagina(cap.entrada.filePath) : [];
+const ultimaMudanca = mudancas.length > 0 ? mudancas[mudancas.length - 1].data : null;
 ---
 
 <Pagina
   titulo={cap.titulo}
   chamada={`capítulo ${cap.numero}`}
   subtitulo={cap.resumo}
+  etapa={cap.etapa}
+  ultimaMudanca={ultimaMudanca}
   trilha={[
     { rotulo: livro.titulo, href: `/livros/${livro.id}/` },
     { rotulo: cap.parte.titulo },
@@ -44,6 +50,7 @@ const { Content } = await render(cap.entrada);
   ]}
 >
   <Content components={componentes} />
+  <Historico etapaAtual={cap.etapa} mudancas={mudancas} />
 
   <Fragment slot="rodape">
     {

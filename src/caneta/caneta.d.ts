@@ -77,6 +77,12 @@ export interface Matematica {
   pct(x: number, casas?: number): string;
 }
 
+export interface OrigemFigura {
+  autoria: 'ia' | 'humano' | 'misto' | string;
+  pedido?: string;
+  validacao?: string;
+}
+
 /** Objeto exportado por um arquivo de figura. A forma completa está na skill ilustracao-caneta. */
 export interface Figura {
   tipo: 'ilustracao' | 'simulacao';
@@ -84,6 +90,7 @@ export interface Figura {
   altura: number;
   alt: string;
   semente?: number;
+  origem?: OrigemFigura;
   [campo: string]: unknown;
 }
 
