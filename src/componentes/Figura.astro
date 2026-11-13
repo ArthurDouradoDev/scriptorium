@@ -1,0 +1,94 @@
+---
+import '../caneta/caneta.css';
+import type { Figura } from '../caneta/caneta.js';
+import {
+  caminhoDaPaginaPorUrl,
+  proximoNumeroFigura,
+  renderizarFiguraImpressa,
+  resolverArquivoPagina,
+} from '../caneta/figura';
+
+interface Props {
+  nome: string;
+  legenda?: string;
+  largura?: 'texto' | 'larga';
+}
+
+const { nome, legenda, largura = 'texto' } = Astro.props;
+
+const locals = Astro.locals as Record<string | symbol, unknown>;
+const numero = legenda ? proximoNumeroFigura(locals) : null;
+
+const mapaFiguras = import.meta.glob<{ default: Figura }>('/conteudo/**/figuras/*.js');
+const pagina = typeof locals.pastaPagina === 'string' ? locals.pastaPagina : caminhoDaPaginaPorUrl(Astro.url.pathname);
+
+const { chave, valor: carregarFigura } = resolverArquivoPagina({
+  tipo: 'figuras',
+  arquivo: `${nome}.js`,
+  pagina,
+  mapa: mapaFiguras,
+});
+
+const modulo = await carregarFigura();
+const figura = modulo.default;
+const { classes, htmlInterno } = renderizarFiguraImpressa(figura);
+---
+
+<figure class={largura === 'larga' ? 'larga' : undefined}>
+  <div class={classes} data-estado="impresso" data-caneta-chave={chave} set:html={htmlInterno} />
+  {
+    legenda && (
+      <figcaption>
+        <b>Figura {numero}.</b> {legenda}
+      </figcaption>
+    )
+  }
+</figure>
+
+<script>
+  import type { Figura } from '../caneta/caneta.js';
+
+  const figurasPublicas = import.meta.glob<{ default: Figura }>([
+    '/conteudo/exemplo/**/figuras/*.js',
+    '/conteudo/publico/**/figuras/*.js',
+  ]);
+  const figurasPrivadas = import.meta.env.DEV
+    ? import.meta.glob<{ default: Figura }>('/conteudo/privado/**/figuras/*.js')
+    : {};
+  const todasFiguras: Record<string, () => Promise<{ default: Figura }>> = {
+    ...figurasPublicas,
+    ...figurasPrivadas,
+  };
+
+  async function ativarFigura(el: HTMLElement) {
+    const chave = el.dataset.canetaChave;
+    if (!chave || el.dataset.canetaMontada === '1') return;
+    const carregar = todasFiguras[chave];
+    if (!carregar) return;
+
+    el.dataset.canetaMontada = '1';
+    const [{ montar }, modFigura] = await Promise.all([import('../caneta/caneta.js'), carregar()]);
+    el.removeAttribute('data-estado');
+    montar(el, modFigura.default);
+  }
+
+  const alvos = document.querySelectorAll<HTMLElement>('[data-caneta-chave]');
+  if (alvos.length > 0) {
+    if ('IntersectionObserver' in window) {
+      const obs = new IntersectionObserver(
+        (entradas) => {
+          for (const entrada of entradas) {
+            if (!entrada.isIntersecting) continue;
+            const alvo = entrada.target as HTMLElement;
+            obs.unobserve(alvo);
+            void ativarFigura(alvo);
+          }
+        },
+        { rootMargin: '120px 0px', threshold: 0.01 },
+      );
+      alvos.forEach((alvo) => obs.observe(alvo));
+    } else {
+      alvos.forEach((alvo) => void ativarFigura(alvo));
+    }
+  }
+</script>

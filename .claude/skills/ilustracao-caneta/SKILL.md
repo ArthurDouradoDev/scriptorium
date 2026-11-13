@@ -124,7 +124,7 @@ Se você não tem como ver a tela, diga isso na resposta final e peça ao autor 
 ## 6. Entregue
 
 - Confira os fatos: toda posição, valor e rótulo que representa algo real precisa bater com uma fonte. Escreva a fonte em `origem.validacao`. Se não conferiu, escreva "não conferido" e avise o autor.
-- Na página MDX, a figura entra com `<Figura nome="<nome>" legenda="..." />`. A legenda começa pelo que a figura mostra e termina com o que observar. (O componente `Figura` nasce na fase f3 do plano `v1-motor`; antes disso, a figura só aparece na prévia.)
+- Na página MDX, a figura entra com `<Figura nome="<nome>" legenda="..." />`. A legenda começa pelo que a figura mostra e termina com o que observar.
 - Responda com: o caminho do arquivo, a frase do passo 1, o resultado do `conferir.mjs` e o que não pôde ser verificado.
 
 ## O que nunca fazer

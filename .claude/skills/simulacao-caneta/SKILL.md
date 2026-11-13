@@ -126,7 +126,7 @@ Se você não tem como ver a tela, diga isso na resposta e peça ao autor para a
 
 ## 7. Entregue
 
-- Na página MDX: `<Figura nome="<nome>" largura="larga" />`, seguida da frase sobre as simplificações do modelo e da lista "três coisas para tentar". (O componente nasce na fase f3 do plano `v1-motor`; antes disso, só a prévia mostra a simulação.)
+- Na página MDX: `<Figura nome="<nome>" largura="larga" />`, seguida da frase sobre as simplificações do modelo e da lista "três coisas para tentar".
 - Responda com: o caminho do arquivo, a pergunta, as três descobertas, o resultado do `conferir.mjs`, as simplificações do modelo e o que não pôde ser verificado.
 
 ## O que nunca fazer

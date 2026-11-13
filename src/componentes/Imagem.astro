@@ -1,0 +1,248 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import {
+  caminhoDaPaginaPorUrl,
+  proximoNumeroFigura,
+  resolverArquivoPagina,
+} from '../caneta/figura';
+
+interface Props {
+  arquivo: string;
+  alt: string;
+  legenda?: string;
+  tratamento?: 'original' | 'tinta';
+  origem?: 'propria' | 'terceiros' | 'ia';
+  credito?: string;
+  largura?: 'texto' | 'larga';
+}
+
+const {
+  arquivo,
+  alt,
+  legenda,
+  tratamento = 'original',
+  origem = 'propria',
+  credito,
+  largura = 'texto',
+} = Astro.props;
+
+if (!alt || !alt.trim()) {
+  throw new Error(`Imagem "${arquivo}" precisa do atributo obrigatório "alt".`);
+}
+
+if (origem === 'terceiros' && (!credito || !credito.trim())) {
+  throw new Error(`Imagem "${arquivo}" com origem="terceiros" precisa do atributo obrigatório "credito".`);
+}
+
+const locals = Astro.locals as Record<string | symbol, unknown>;
+const numero = legenda ? proximoNumeroFigura(locals) : null;
+
+const mapaImagens = import.meta.glob<{ default: ImageMetadata }>(
+  '/conteudo/**/imagens/*.{png,jpg,jpeg,webp,avif,gif}',
+);
+const pagina = typeof locals.pastaPagina === 'string' ? locals.pastaPagina : caminhoDaPaginaPorUrl(Astro.url.pathname);
+
+const { valor: carregarImagem } = resolverArquivoPagina({
+  tipo: 'imagens',
+  arquivo,
+  pagina,
+  mapa: mapaImagens,
+});
+
+const modulo = await carregarImagem();
+const imagem = modulo.default;
+const limiteLargura = largura === 'larga' ? 1600 : 1360;
+const larguraRender = Math.min(imagem.width, limiteLargura);
+const ehTinta = tratamento === 'tinta';
+---
+
+<figure class={largura === 'larga' ? 'larga' : undefined}>
+  <div
+    class:list={['moldura', { 'moldura-tinta': ehTinta }]}
+    data-tratamento={tratamento}
+    data-origem={origem}
+  >
+    <div
+      class="moldura-conteudo"
+      role={ehTinta ? 'button' : undefined}
+      tabindex={ehTinta ? 0 : undefined}
+      aria-pressed={ehTinta ? 'false' : undefined}
+      title={ehTinta ? 'Clique para alternar entre tom de tinta e imagem original' : undefined}
+    >
+      <Image src={imagem} alt={alt} width={larguraRender} />
+    </div>
+    <span class="moldura-borda" aria-hidden="true"></span>
+  </div>
+  {
+    (legenda || credito) && (
+      <figcaption>
+        {numero && <b>Figura {numero}.</b>} {legenda}
+        {credito && <span class="credito">{legenda ? ` (${credito})` : credito}</span>}
+      </figcaption>
+    )
+  }
+</figure>
+
+<script>
+  function garantirFiltroTremor() {
+    const NS = 'http://www.w3.org/2000/svg';
+    const ID = 'caneta-tremor';
+    const movimento = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const doc = document as Document & { __canetaTremor?: number };
+
+    if (!doc.getElementById(ID)) {
+      const s = doc.createElementNS(NS, 'svg');
+      s.setAttribute('width', '0');
+      s.setAttribute('height', '0');
+      s.setAttribute('aria-hidden', 'true');
+      s.style.position = 'absolute';
+      const defs = doc.createElementNS(NS, 'defs');
+      const f = doc.createElementNS(NS, 'filter');
+      f.setAttribute('id', ID);
+      const turb = doc.createElementNS(NS, 'feTurbulence');
+      turb.setAttribute('type', 'turbulence');
+      turb.setAttribute('baseFrequency', '0.025');
+      turb.setAttribute('numOctaves', '2');
+      turb.setAttribute('seed', '1');
+      turb.setAttribute('result', 'noise');
+      const disp = doc.createElementNS(NS, 'feDisplacementMap');
+      disp.setAttribute('in', 'SourceGraphic');
+      disp.setAttribute('in2', 'noise');
+      disp.setAttribute('scale', '1.4');
+      f.appendChild(turb);
+      f.appendChild(disp);
+      defs.appendChild(f);
+      s.appendChild(defs);
+      doc.body.appendChild(s);
+
+      if (movimento && !doc.__canetaTremor) {
+        let seed = 1;
+        doc.__canetaTremor = window.setInterval(
+          () => turb.setAttribute('seed', String((seed = (seed % 6) + 1))),
+          190,
+        );
+      }
+    }
+
+    document.querySelectorAll('.moldura-borda').forEach((borda) => {
+      borda.classList.add('com-tremor');
+    });
+  }
+
+  function alternarOriginal(conteudo: HTMLElement) {
+    const moldura = conteudo.closest<HTMLElement>('.moldura-tinta');
+    if (!moldura) return;
+    const ativo = moldura.dataset.original === 'true';
+    if (ativo) {
+      delete moldura.dataset.original;
+      conteudo.setAttribute('aria-pressed', 'false');
+    } else {
+      moldura.dataset.original = 'true';
+      conteudo.setAttribute('aria-pressed', 'true');
+    }
+  }
+
+  garantirFiltroTremor();
+
+  document.querySelectorAll<HTMLElement>('.moldura-tinta .moldura-conteudo').forEach((conteudo) => {
+    if (conteudo.dataset.imagemLigada === '1') return;
+    conteudo.dataset.imagemLigada = '1';
+    conteudo.addEventListener('click', () => alternarOriginal(conteudo));
+    conteudo.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        alternarOriginal(conteudo);
+      }
+    });
+  });
+</script>
+
+<style>
+  .moldura {
+    position: relative;
+    padding: 10px;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .moldura-borda {
+    position: absolute;
+    inset: 0;
+    border: 1.2px solid var(--ink);
+    border-radius: 0;
+    pointer-events: none;
+  }
+
+  .moldura-borda.com-tremor {
+    filter: url(#caneta-tremor);
+  }
+
+  .moldura-conteudo {
+    overflow: hidden;
+  }
+
+  .moldura-tinta .moldura-conteudo {
+    cursor: pointer;
+  }
+
+  .moldura-conteudo :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0;
+  }
+
+  /* Tratamento tinta no tema claro: cinza tingido com --ink */
+  .moldura-tinta:not([data-original='true']) .moldura-conteudo {
+    background: var(--ink);
+  }
+
+  .moldura-tinta:not([data-original='true']) .moldura-conteudo :global(img) {
+    filter: grayscale(1) contrast(1.05);
+    mix-blend-mode: screen;
+  }
+
+  /* Tema escuro: leve redução de brilho para não ofuscar */
+  :global(:root[data-theme='dark']) .moldura-conteudo :global(img) {
+    filter: brightness(0.88);
+  }
+
+  :global(:root[data-theme='dark']) .moldura-tinta:not([data-original='true']) .moldura-conteudo {
+    background: var(--bg);
+  }
+
+  :global(:root[data-theme='dark']) .moldura-tinta:not([data-original='true']) .moldura-conteudo :global(img) {
+    filter: grayscale(1) brightness(0.88);
+    mix-blend-mode: normal;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .moldura-conteudo :global(img) {
+      filter: brightness(0.88);
+    }
+
+    :global(:root:not([data-theme='light'])) .moldura-tinta:not([data-original='true']) .moldura-conteudo {
+      background: var(--bg);
+    }
+
+    :global(:root:not([data-theme='light'])) .moldura-tinta:not([data-original='true']) .moldura-conteudo :global(img) {
+      filter: grayscale(1) brightness(0.88);
+      mix-blend-mode: normal;
+    }
+  }
+
+  .credito {
+    color: var(--muted);
+  }
+
+  @media print {
+    .moldura-conteudo :global(img) {
+      filter: none;
+      mix-blend-mode: normal;
+    }
+    .moldura-tinta .moldura-conteudo {
+      background: transparent;
+    }
+  }
+</style>
