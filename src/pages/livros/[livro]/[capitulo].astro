@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import Pagina from '../../../layouts/Pagina.astro';
+import { componentes } from '../../../componentes/mdx';
+import { paginaVisivel } from '../../../conteudo/raizes';
+
+export async function getStaticPaths() {
+  const capitulos = await getCollection('capitulos', (entrada) =>
+    paginaVisivel(entrada.data.etapa),
+  );
+  return capitulos.map((capitulo) => {
+    const [livro, slugCapitulo] = capitulo.id.split('/');
+    return {
+      params: { livro, capitulo: slugCapitulo },
+      props: { capitulo, livro },
+    };
+  });
+}
+
+const { capitulo, livro } = Astro.props;
+const { Content } = await render(capitulo);
+---
+
+<Pagina
+  titulo={capitulo.data.titulo}
+  chamada={capitulo.data.chamada}
+  subtitulo={capitulo.data.resumo}
+  trilha={[{ rotulo: 'Início', href: '/' }, { rotulo: livro }, { rotulo: capitulo.data.titulo }]}
+>
+  <Content components={componentes} />
+</Pagina>

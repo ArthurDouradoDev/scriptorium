@@ -1,0 +1,7 @@
+titulo: Guia de RF
+resumo: Fundamentos de radiofrequência explicados com intuição física, exemplos práticos e figuras simples.
+partes:
+  - titulo: Fundamentos
+    capitulos:
+      - introducao
+      - onda-e-espectro
