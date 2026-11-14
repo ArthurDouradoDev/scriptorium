@@ -1,14 +1,109 @@
-/* Estilos compartilhados entre exportação HTML e PDF (impressão).
-   A f10 expandirá este arquivo com regras de paginação para PDF. */
+/* Estilos compartilhados entre exportação HTML e PDF (impressão). */
+
+@page {
+  size: A4;
+  margin: 22mm 18mm 22mm 18mm;
+}
 
 @media print {
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 11pt;
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  main {
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .larga {
+    position: static;
+    left: auto;
+    transform: none;
+    width: 100%;
+  }
+
   .barra,
   #tema,
   #progresso,
   .botao-copiar,
   .bloco-codigo-topo,
   .flashcards-baixar,
-  .rodape {
+  .rodape,
+  .origem-figura {
     display: none;
+  }
+
+  .sim-endereco-interativo {
+    display: block;
+    margin: 8px 0 0;
+    font-size: 9.5pt;
+    color: var(--muted);
+  }
+
+  /* Capa do livro completo */
+  main:has(.sumario-completo) .cabecalho {
+    padding-top: 48mm;
+  }
+
+  .sumario-completo {
+    break-before: page;
+    page-break-before: always;
+    margin-top: 0;
+  }
+
+  .capitulo-completo {
+    break-before: page;
+    page-break-before: always;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  /* Títulos nunca sozinhos no fim da página */
+  h1,
+  h2,
+  h3,
+  h4,
+  .cabecalho-capitulo,
+  .secao-fixa-titulo {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+
+  /* Figura e legenda sempre juntas */
+  figure,
+  .caneta-sim {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  figcaption {
+    break-before: avoid;
+    page-break-before: avoid;
+  }
+
+  .secao-fixa,
+  .nota,
+  .quadro,
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }

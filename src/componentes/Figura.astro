@@ -36,6 +36,11 @@ const figura = modulo.default;
 const { classes, htmlInterno } = renderizarFiguraImpressa(figura);
 const origem = figura.origem;
 
+const ehSimulacao = classes.includes('caneta-sim');
+const sitePublico = (Astro.site?.toString() ?? process.env.SITE_URL ?? '').replace(/\/+$/, '');
+const paginaLimpa = pagina.replace(/^\/+|\/+$/g, '');
+const enderecoInterativo = ehSimulacao && sitePublico ? `${sitePublico}/${paginaLimpa}/` : null;
+
 const ROTULOS_AUTORIA: Record<string, string> = {
   ia: 'com IA',
   humano: 'à mão',
@@ -51,6 +56,13 @@ const textoAutoria = origem?.autoria ? (ROTULOS_AUTORIA[origem.autoria] ?? orige
       <figcaption>
         <b>Figura {numero}.</b> {legenda}
       </figcaption>
+    )
+  }
+  {
+    enderecoInterativo && (
+      <p class="sim-endereco-interativo">
+        versão interativa em <a href={enderecoInterativo}>{enderecoInterativo}</a>
+      </p>
     )
   }
   {
@@ -117,6 +129,9 @@ const textoAutoria = origem?.autoria ? (ROTULOS_AUTORIA[origem.autoria] ?? orige
   }
   .origem-detalhes dd {
     margin: 0;
+  }
+  .sim-endereco-interativo {
+    display: none;
   }
 </style>
 

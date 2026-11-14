@@ -126,7 +126,7 @@ const secoesPorSlug = new Map(capitulosRenderizados.map((item) => [item.cap.slug
     capitulosRenderizados.map(({ cap, Content }) => {
       const comps = componentesDoCapitulo(`livros/${livro.id}/${cap.slug}`, cap.numero);
       return (
-        <article class="capitulo-completo" id={`cap-${cap.slug}`}>
+        <article class="capitulo-completo" id={`cap-${cap.slug}`} data-titulo={cap.titulo}>
           <header class="cabecalho-capitulo">
             <div class="chamada">
               capítulo {cap.numero} · {cap.parte.titulo}

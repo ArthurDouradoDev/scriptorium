@@ -9,7 +9,8 @@
     "test": "vitest run",
     "registrar": "node scripts/registrar.mjs",
     "flashcards": "node scripts/exportar-flashcards.mjs",
-    "exportar:html": "node scripts/exportar-html.mjs"
+    "exportar:html": "node scripts/exportar-html.mjs",
+    "exportar:pdf": "node scripts/exportar-pdf.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.5",
@@ -29,6 +30,7 @@
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "playwright": "^1.65.1",
     "typescript": "^6.0.3",
     "vitest": "^5.1.0"
   }

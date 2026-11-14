@@ -11,6 +11,19 @@ npm run dev
 
 O site abre em `http://127.0.0.1:4321`. `npm run build` gera o site estático em `dist/`.
 
+## Exportação (HTML e PDF)
+
+Depois de rodar `npm run build`, é possível exportar páginas avulsas ou livros completos para `dist-export/`:
+
+- HTML de arquivo único: `npm run exportar:html -- <rota>` ou `--tudo`
+- PDF em A4: `npm run exportar:pdf -- <rota>` ou `--tudo`
+
+A exportação em PDF usa o Chromium do Playwright. Na primeira vez (ou após atualizar o Playwright), instale o navegador com:
+
+```bash
+npx playwright install chromium
+```
+
 ## Editor local
 
 Com o `npm run dev` rodando, abra `http://127.0.0.1:4321/keystatic`. O editor grava os mesmos `index.mdx` que o site lê; não há login nem servidor. Ele só existe no modo de desenvolvimento: o build não leva a rota.
