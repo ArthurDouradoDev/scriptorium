@@ -1,8 +1,8 @@
 import { montar, type Figura } from './caneta.js';
 import { raizesAtivas, type Raiz } from '../conteudo/raizes';
 
-const CHAVE_CONTADOR = Symbol.for('rf_guide.contadorFigura');
-const CHAVE_CAPITULO = Symbol.for('rf_guide.numeroCapitulo');
+const CHAVE_CONTADOR = Symbol.for('scriptorium.contadorFigura');
+const CHAVE_CAPITULO = Symbol.for('scriptorium.numeroCapitulo');
 
 /** Extrai o caminho relativo da página (ex.: `livros/guia-de-rf/introducao`) a partir da URL. */
 export function caminhoDaPaginaPorUrl(pathname: string): string {

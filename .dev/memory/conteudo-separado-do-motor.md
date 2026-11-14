@@ -10,7 +10,7 @@ created: 2026-11-12
 
 # Conteúdo separado do motor
 
-O rf_guide é o motor (layout, componentes, kit de figuras, skills, exportação). O conteúdo fica em três raízes dentro de `conteudo/`:
+O scriptorium é o motor (layout, componentes, kit de figuras, skills, exportação). O conteúdo fica em três raízes dentro de `conteudo/`:
 
 - `conteudo/exemplo/`: versionada neste repositório. É o que quem clona vê funcionando.
 - `conteudo/publico/`: outro repositório, clonado nesta pasta. Vai para o site.

@@ -40,8 +40,8 @@ describe('exportar-pdf', () => {
 
   it('recusa exportar página privada em PDF sem CONTEUDO_PRIVADO=1', async () => {
     const pastaPrivada = path.join(process.cwd(), 'conteudo', 'privado', 'blog', '__teste-pdf-privado');
-    const distDir = criarPastaTemp('rf-guide-dist-pdf-priv-');
-    const exportDir = criarPastaTemp('rf-guide-exp-pdf-priv-');
+    const distDir = criarPastaTemp('scriptorium-dist-pdf-priv-');
+    const exportDir = criarPastaTemp('scriptorium-exp-pdf-priv-');
 
     try {
       fs.mkdirSync(pastaPrivada, { recursive: true });
@@ -70,7 +70,7 @@ describe('exportar-pdf', () => {
       return;
     }
 
-    const exportDir = criarPastaTemp('rf-guide-exp-pdf-real-');
+    const exportDir = criarPastaTemp('scriptorium-exp-pdf-real-');
     const res = await exportarPdfRota('/livros/guia-de-rf/rsrp-e-rsrq', { distDir, exportDir });
     expect(res.arquivo).toBe('guia-de-rf-rsrp-e-rsrq.pdf');
     expect(fs.existsSync(res.caminhoSaida)).toBe(true);

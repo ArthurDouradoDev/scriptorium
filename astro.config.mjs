@@ -7,8 +7,25 @@ import react from '@astrojs/react';
 import keystatic from '@keystatic/astro';
 import YAML from 'yaml';
 
-/* O editor local (Keystatic, em /keystatic) só existe no `npm run dev`: o build não leva a rota. */
+/* O editor local (Keystatic, em /keystatic, com atalho em /editor) só existe no `npm run dev`: o build não leva a rota. */
 const emDev = process.argv.includes('dev');
+
+/** Redireciona /editor para /keystatic apenas em desenvolvimento. */
+function atalhoEditor() {
+  return {
+    name: 'atalho-editor',
+    hooks: {
+      /** @param {{ injectRoute: (route: { entrypoint: string; pattern: string; prerender: boolean }) => void }} ctx */
+      'astro:config:setup': ({ injectRoute }) => {
+        injectRoute({
+          entrypoint: './src/editor/atalho.astro',
+          pattern: '/editor',
+          prerender: false,
+        });
+      },
+    },
+  };
+}
 
 /** Raízes de conteúdo e livros de cada uma, para as coleções do editor (src/editor/estrutura.ts). */
 function conteudoDoEditor() {
@@ -30,6 +47,6 @@ function conteudoDoEditor() {
 }
 
 export default defineConfig({
-  integrations: emDev ? [mdx(), react(), keystatic()] : [mdx()],
+  integrations: emDev ? [mdx(), react(), keystatic(), atalhoEditor()] : [mdx()],
   vite: emDev ? { define: { __CONTEUDO_EDITOR__: JSON.stringify(conteudoDoEditor()) } } : {},
 });

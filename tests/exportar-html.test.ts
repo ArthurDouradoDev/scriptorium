@@ -63,7 +63,7 @@ function verificarAncorasDoSumario(html: string) {
 
 describe('exportar-html', () => {
   it('embute CSS, fonte, imagem redimensionada (<= 1600 px) e reescreve links de capítulos', async () => {
-    const distDir = criarPastaTemp('rf-guide-dist-');
+    const distDir = criarPastaTemp('scriptorium-dist-');
     fs.mkdirSync(path.join(distDir, '_astro'), { recursive: true });
     fs.mkdirSync(path.join(distDir, 'livros', 'teste', 'completo'), { recursive: true });
 
@@ -118,8 +118,8 @@ describe('exportar-html', () => {
 
   it('recusa exportar página privada sem CONTEUDO_PRIVADO=1 e permite com a variável', async () => {
     const pastaPrivada = path.join(process.cwd(), 'conteudo', 'privado', 'blog', '__teste-export-privado');
-    const distDir = criarPastaTemp('rf-guide-dist-priv-');
-    const exportDir = criarPastaTemp('rf-guide-exp-priv-');
+    const distDir = criarPastaTemp('scriptorium-dist-priv-');
+    const exportDir = criarPastaTemp('scriptorium-exp-priv-');
 
     try {
       fs.mkdirSync(pastaPrivada, { recursive: true });
@@ -157,7 +157,7 @@ describe('exportar-html', () => {
       return;
     }
 
-    const exportDir = criarPastaTemp('rf-guide-exp-real-');
+    const exportDir = criarPastaTemp('scriptorium-exp-real-');
     const resCompleto = await exportarRota('/livros/guia-de-rf/completo', { distDir, exportDir });
     const htmlCompleto = fs.readFileSync(resCompleto.caminhoSaida, 'utf8');
     verificarReferenciasExternas(htmlCompleto);

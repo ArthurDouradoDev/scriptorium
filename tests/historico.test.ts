@@ -7,7 +7,7 @@ import { historicoDaPagina } from '../src/conteudo/historico';
 
 const dirsParaLimpar: string[] = [];
 
-function criarTempDir(prefixo = 'rf-guide-hist-'): string {
+function criarTempDir(prefixo = 'scriptorium-hist-'): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), prefixo));
   dirsParaLimpar.push(dir);
   return dir;

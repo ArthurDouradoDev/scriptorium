@@ -1,4 +1,4 @@
-# rf_guide
+# scriptorium
 
 Motor de uma biblioteca pessoal de estudo e treinamento: livros com capítulos e um blog, publicados como página web e exportáveis em HTML de arquivo único e PDF. Começa com conteúdo de RF (radiofrequência) e vai expandir para outros assuntos. Stack: Astro + MDX + TypeScript, com npm.
 

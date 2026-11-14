@@ -1,4 +1,4 @@
-# rf_guide
+# scriptorium
 
 Motor de uma biblioteca pessoal de estudo: livros com capítulos e um blog, escritos em MDX e publicados com Astro.
 
@@ -26,7 +26,7 @@ npx playwright install chromium
 
 ## Editor local
 
-Com o `npm run dev` rodando, abra `http://127.0.0.1:4321/keystatic`. O editor grava os mesmos `index.mdx` que o site lê; não há login nem servidor. Ele só existe no modo de desenvolvimento: o build não leva a rota.
+Com o `npm run dev` rodando, abra `http://127.0.0.1:4321/editor` (que redireciona para `/keystatic`). O editor grava os mesmos `index.mdx` que o site lê; não há login nem servidor. Ele só existe no modo de desenvolvimento: o build não leva a rota.
 
 O menu lateral tem, para cada raiz de conteúdo (`exemplo`, `publico`, `privado`), os capítulos de cada livro, o sumário de cada livro e o blog. Livro novo (pasta com `livro.yaml`) aparece depois de reiniciar o `npm run dev`.
 

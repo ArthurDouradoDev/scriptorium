@@ -7,7 +7,7 @@ import { paginaVisivel, raizesAtivas } from '../src/conteudo/raizes';
 let tempDir: string;
 
 beforeEach(() => {
-  tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rf-guide-raizes-'));
+  tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'scriptorium-raizes-'));
 });
 
 afterEach(() => {

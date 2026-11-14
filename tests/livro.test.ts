@@ -7,7 +7,7 @@ import { carregarLivro, listarLivros, type EntradaCapituloMinima } from '../src/
 let tempDir: string;
 
 beforeEach(() => {
-  tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'rf-guide-livro-'));
+  tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'scriptorium-livro-'));
 });
 
 afterEach(() => {
