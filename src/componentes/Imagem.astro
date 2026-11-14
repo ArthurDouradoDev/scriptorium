@@ -15,6 +15,8 @@ interface Props {
   origem?: 'propria' | 'terceiros' | 'ia';
   credito?: string;
   largura?: 'texto' | 'larga';
+  _pastaPagina?: string;
+  _numeroFigura?: string | null;
 }
 
 const {
@@ -25,6 +27,8 @@ const {
   origem = 'propria',
   credito,
   largura = 'texto',
+  _pastaPagina,
+  _numeroFigura,
 } = Astro.props;
 
 if (!alt || !alt.trim()) {
@@ -36,12 +40,12 @@ if (origem === 'terceiros' && (!credito || !credito.trim())) {
 }
 
 const locals = Astro.locals as Record<string | symbol, unknown>;
-const numero = legenda ? rotuloFigura(locals) : null;
+const numero = _numeroFigura !== undefined ? _numeroFigura : legenda ? rotuloFigura(locals) : null;
 
 const mapaImagens = import.meta.glob<{ default: ImageMetadata }>(
   '/conteudo/**/imagens/*.{png,jpg,jpeg,webp,avif,gif}',
 );
-const pagina = typeof locals.pastaPagina === 'string' ? locals.pastaPagina : caminhoDaPaginaPorUrl(Astro.url.pathname);
+const pagina = _pastaPagina ?? (typeof locals.pastaPagina === 'string' ? locals.pastaPagina : caminhoDaPaginaPorUrl(Astro.url.pathname));
 
 const { valor: carregarImagem } = resolverArquivoPagina({
   tipo: 'imagens',

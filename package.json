@@ -8,7 +8,8 @@
     "preview": "astro preview",
     "test": "vitest run",
     "registrar": "node scripts/registrar.mjs",
-    "flashcards": "node scripts/exportar-flashcards.mjs"
+    "flashcards": "node scripts/exportar-flashcards.mjs",
+    "exportar:html": "node scripts/exportar-html.mjs"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.5",

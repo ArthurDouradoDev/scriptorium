@@ -12,15 +12,17 @@ interface Props {
   nome: string;
   legenda?: string;
   largura?: 'texto' | 'larga';
+  _pastaPagina?: string;
+  _numeroFigura?: string | null;
 }
 
-const { nome, legenda, largura = 'texto' } = Astro.props;
+const { nome, legenda, largura = 'texto', _pastaPagina, _numeroFigura } = Astro.props;
 
 const locals = Astro.locals as Record<string | symbol, unknown>;
-const numero = legenda ? rotuloFigura(locals) : null;
+const numero = _numeroFigura !== undefined ? _numeroFigura : legenda ? rotuloFigura(locals) : null;
 
 const mapaFiguras = import.meta.glob<{ default: Figura }>('/conteudo/**/figuras/*.js');
-const pagina = typeof locals.pastaPagina === 'string' ? locals.pastaPagina : caminhoDaPaginaPorUrl(Astro.url.pathname);
+const pagina = _pastaPagina ?? (typeof locals.pastaPagina === 'string' ? locals.pastaPagina : caminhoDaPaginaPorUrl(Astro.url.pathname));
 
 const { chave, valor: carregarFigura } = resolverArquivoPagina({
   tipo: 'figuras',

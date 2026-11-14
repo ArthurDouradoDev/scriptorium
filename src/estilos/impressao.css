@@ -1,0 +1,14 @@
+/* Estilos compartilhados entre exportação HTML e PDF (impressão).
+   A f10 expandirá este arquivo com regras de paginação para PDF. */
+
+@media print {
+  .barra,
+  #tema,
+  #progresso,
+  .botao-copiar,
+  .bloco-codigo-topo,
+  .flashcards-baixar,
+  .rodape {
+    display: none;
+  }
+}

@@ -1,0 +1,268 @@
+---
+import { getCollection, render } from 'astro:content';
+import Pagina from '../../../layouts/Pagina.astro';
+import { componentes } from '../../../componentes/mdx';
+import { carregarLivro, listarLivros } from '../../../conteudo/livro';
+
+type FabricaAstro = ((result: unknown, props: Record<string, unknown>, slots: unknown) => unknown) & {
+  isAstroComponentFactory?: boolean;
+};
+
+function componentesDoCapitulo(pasta: string, numeroCapitulo: number) {
+  let contadorFigura = 0;
+  const envolver = (Comp: unknown) => {
+    const fabrica = Comp as FabricaAstro;
+    const wrapper: FabricaAstro = (result, props, slots) => {
+      const numero = props.legenda ? `${numeroCapitulo}.${++contadorFigura}` : null;
+      return fabrica(result, { ...props, _pastaPagina: pasta, _numeroFigura: numero }, slots);
+    };
+    wrapper.isAstroComponentFactory = true;
+    return wrapper;
+  };
+  return {
+    ...componentes,
+    Figura: envolver(componentes.Figura),
+    Imagem: envolver(componentes.Imagem),
+  };
+}
+
+export async function getStaticPaths() {
+  const todosCapitulos = await getCollection('capitulos');
+  const infosLivros = listarLivros();
+
+  return infosLivros.map((info) => {
+    const livro = carregarLivro(info.id, todosCapitulos);
+    return {
+      params: { livro: livro.id },
+      props: { livro },
+    };
+  });
+}
+
+const { livro } = Astro.props;
+
+const capitulosRenderizados = await Promise.all(
+  livro.capitulos.map(async (cap) => {
+    const { Content, headings } = await render(cap.entrada);
+    const secoes = headings.filter((h) => h.depth === 2).map((h) => ({ slug: h.slug, text: h.text }));
+    return { cap, Content, secoes };
+  }),
+);
+
+const secoesPorSlug = new Map(capitulosRenderizados.map((item) => [item.cap.slug, item.secoes]));
+---
+
+<Pagina
+  titulo={livro.titulo}
+  chamada="livro completo"
+  subtitulo={livro.resumo}
+  trilha={[
+    { rotulo: 'Início', href: '/' },
+    { rotulo: 'Livros', href: '/livros/' },
+    { rotulo: livro.titulo, href: `/livros/${livro.id}/` },
+    { rotulo: 'Completo' },
+  ]}
+>
+  {
+    livro.cores && (
+      <section class="secao-fixa legenda-cores" aria-label="Convenção de cores">
+        <div class="secao-fixa-titulo">Convenção de cores nas figuras</div>
+        <ul class="lista-cores">
+          {livro.cores.map((cor) => (
+            <li>
+              <span class="amostra-cor" style={`--cor-amostra: var(${cor.cssVar});`} aria-hidden="true" />
+              <strong>{cor.rotulo}:</strong> {cor.significado}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  <section id="sumario" class="sumario-completo" aria-label="Sumário">
+    <h2 class="titulo-sumario"><span class="n">§</span>Sumário</h2>
+    {
+      livro.partes.map((parte) => (
+        <div class="parte-sumario">
+          <h3>
+            <span class="parte-rotulo">Parte {parte.numero} · </span>
+            {parte.titulo}
+          </h3>
+          <ol class="lista-capitulos">
+            {parte.capitulos.map((cap) => {
+              const secoes = secoesPorSlug.get(cap.slug) ?? [];
+              return (
+                <li class="item-capitulo">
+                  <div class="cap-linha">
+                    <span class="cap-num">{cap.numero}</span>
+                    <div class="cap-corpo">
+                      <a class="cap-titulo" href={`#cap-${cap.slug}`}>
+                        {cap.titulo}
+                      </a>
+                      <p class="cap-resumo">{cap.resumo}</p>
+                      {secoes.length > 0 && (
+                        <ol class="lista-secoes">
+                          {secoes.map((sec, idx) => (
+                            <li>
+                              <a href={`#cap-${cap.slug}`}>
+                                <span class="sec-num">{idx + 1}.</span> {sec.text}
+                              </a>
+                            </li>
+                          ))}
+                        </ol>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      ))
+    }
+  </section>
+
+  {
+    capitulosRenderizados.map(({ cap, Content }) => {
+      const comps = componentesDoCapitulo(`livros/${livro.id}/${cap.slug}`, cap.numero);
+      return (
+        <article class="capitulo-completo" id={`cap-${cap.slug}`}>
+          <header class="cabecalho-capitulo">
+            <div class="chamada">
+              capítulo {cap.numero} · {cap.parte.titulo}
+            </div>
+            <h2 class="titulo-capitulo">
+              <span class="n">{cap.numero}</span>
+              {cap.titulo}
+            </h2>
+            {cap.resumo && <p class="subtitulo">{cap.resumo}</p>}
+          </header>
+          <Content components={comps} />
+        </article>
+      );
+    })
+  }
+</Pagina>
+
+<style>
+  .lista-cores {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 8px;
+  }
+  .lista-cores li {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .amostra-cor {
+    display: inline-block;
+    width: 24px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--cor-amostra);
+    flex-shrink: 0;
+  }
+
+  .sumario-completo {
+    margin-top: 40px;
+  }
+  .parte-sumario {
+    margin-top: 28px;
+  }
+  .parte-rotulo {
+    font-family: var(--hand);
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+  .lista-capitulos {
+    list-style: none;
+    padding: 0;
+    margin: 16px 0 0;
+    display: grid;
+    gap: 20px;
+  }
+  .item-capitulo {
+    margin: 0;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .item-capitulo:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+  .cap-linha {
+    display: grid;
+    grid-template-columns: 36px 1fr;
+    gap: 12px;
+    align-items: baseline;
+  }
+  .cap-num {
+    font-family: var(--hand);
+    font-size: 30px;
+    line-height: 1;
+    color: var(--muted);
+  }
+  .cap-titulo {
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.25;
+    text-decoration: none;
+  }
+  .cap-titulo:hover {
+    text-decoration: underline;
+  }
+  .cap-resumo {
+    margin: 6px 0 0;
+    color: var(--muted);
+    font-size: 17px;
+    line-height: 1.5;
+  }
+  .lista-secoes {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    font-size: 16px;
+  }
+  .lista-secoes li {
+    margin: 0;
+  }
+  .lista-secoes a {
+    text-decoration: none;
+    color: var(--muted);
+  }
+  .lista-secoes a:hover {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+  .sec-num {
+    font-family: var(--hand);
+    font-size: 19px;
+    margin-right: 2px;
+  }
+
+  .capitulo-completo {
+    margin-top: 84px;
+    padding-top: 48px;
+    border-top: 1.5px solid var(--rule);
+  }
+  .cabecalho-capitulo {
+    margin-bottom: 28px;
+  }
+  .titulo-capitulo {
+    margin: 10px 0 12px;
+    font-size: clamp(32px, 6vw, 48px);
+    line-height: 1.08;
+  }
+  .titulo-capitulo .n {
+    font-size: clamp(30px, 5.5vw, 44px);
+  }
+</style>

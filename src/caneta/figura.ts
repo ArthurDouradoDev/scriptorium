@@ -9,9 +9,10 @@ export function caminhoDaPaginaPorUrl(pathname: string): string {
   return pathname.replace(/^\/+|\/+$/g, '');
 }
 
-/** Define o número do capítulo atual no contexto de renderização da página. */
+/** Define o número do capítulo atual no contexto de renderização da página e reinicia a contagem de figuras. */
 export function definirNumeroCapitulo(contexto: Record<string | symbol, unknown>, numero: number): void {
   contexto[CHAVE_CAPITULO] = numero;
+  contexto[CHAVE_CONTADOR] = 0;
 }
 
 /** Retorna o número sequencial da próxima figura na página atual (1, 2, 3...). */

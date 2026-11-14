@@ -5,6 +5,7 @@
 node_modules/
 dist/
 dist-flashcards/
+dist-export/
 .astro/
 conteudo/publico/
 conteudo/privado/
