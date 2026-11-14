@@ -71,7 +71,7 @@ Releia cada card fazendo três perguntas:
 2. O verso está na página, com esses mesmos números?
 3. Dá para errar este card? (Se a resposta é óbvia pela própria pergunta, apague.)
 
-Se o projeto já tem `package.json`, rode `npm run build`. Se o script existir, rode `npm run flashcards` e confira que o arquivo da página foi gerado em `dist-flashcards/` com o número certo de cards. (O componente e o script nascem na fase f8 do plano `v1-motor`; antes disso, só grave o bloco.)
+Rode `npm run build` e `npm run flashcards`, e confira que o arquivo da página foi gerado em `dist-flashcards/` com o número certo de cards.
 
 ## 5. Entregue
 

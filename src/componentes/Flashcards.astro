@@ -1,11 +1,23 @@
 ---
-/* Bloco recolhido com a contagem de flashcards da página (exportação na f8). */
+/* Bloco recolhido com a contagem de flashcards da página e link para exportação no Anki. */
 const html = await Astro.slots.render('default');
 const contagem = (html.match(/data-flashcard/g) ?? []).length;
+const caminhoPagina = Astro.url.pathname.replace(/^\/+|\/+$/g, '');
+const hrefExportacao = contagem > 0 && caminhoPagina ? `/flashcards/${caminhoPagina}.txt` : null;
+const nomeArquivo = caminhoPagina ? `${caminhoPagina.split('/').pop()}.txt` : 'flashcards.txt';
 ---
 
 <details class="flashcards">
   <summary>Flashcards ({contagem})</summary>
+  {
+    hrefExportacao && (
+      <p class="flashcards-acoes">
+        <a class="flashcards-baixar" href={hrefExportacao} download={nomeArquivo}>
+          Baixar para o Anki (.txt)
+        </a>
+      </p>
+    )
+  }
   <div class="flashcards-lista" set:html={html} />
 </details>
 
@@ -20,7 +32,24 @@ const contagem = (html.match(/data-flashcard/g) ?? []).length;
     cursor: pointer;
     font-weight: 600;
   }
+  .flashcards-acoes {
+    margin: 12px 0 0;
+    font-size: 16px;
+  }
+  .flashcards-baixar {
+    color: var(--ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .flashcards-baixar:hover {
+    color: var(--muted);
+  }
   .flashcards-lista {
     margin-top: 12px;
+  }
+  @media print {
+    .flashcards-acoes {
+      display: none;
+    }
   }
 </style>
